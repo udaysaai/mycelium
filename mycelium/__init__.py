@@ -1,13 +1,35 @@
-"""Mycelium."""
+"""
+🍄 Mycelium — The Networking Protocol for AI Agents
+"""
 
-# mycelium/__init__.py
-from .core.agent import Agent
+__version__ = "0.1.0"
+__author__ = "Uday"
+__protocol_version__ = "0.1.0"
 
-__all__ = ["Agent"]
+from mycelium.core.errors import (
+    MyceliumError,
+    AgentNotFoundError,
+    CapabilityNotFoundError,
+    RegistrationError,
+    CommunicationError,
+    TrustError,
+)
+from mycelium.core.capability import Capability
+from mycelium.core.card import AgentCard
+from mycelium.core.message import Message
+from mycelium.core.agent import Agent
+from mycelium.network.client import Network
 
-# mycelium/__init__.py
-
-from .core.agent import Agent
-from .network.client import Network  # <-- Ye nayi line add karni hai
-
-__all__ = ["Agent", "Network"]       # <-- Yahan Network ko bhi list mein daal de
+__all__ = [
+    "Agent",
+    "AgentCard",
+    "Capability",
+    "Message",
+    "Network",
+    "MyceliumError",
+    "AgentNotFoundError",
+    "CapabilityNotFoundError",
+    "RegistrationError",
+    "CommunicationError",
+    "TrustError",
+]
