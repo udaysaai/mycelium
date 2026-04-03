@@ -1,0 +1,1 @@
+"""Cross-domain translation bridge."""
