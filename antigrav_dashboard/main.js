@@ -2,50 +2,16 @@
 
 // --- CONFIGURATION ---
 const CONFIG = {
-    // Netlify pe hosted hoga toh environment 
-    // variable se aayega, warna localhost
-    API_BASE: import.meta.env.VITE_API_BASE 
-              || 'http://localhost:8000',
-    REFRESH_INTERVAL: 3000,
+    API_BASE: import.meta.env.VITE_API_BASE || 'http://localhost:8000',
+    POLL_INTERVAL: 3000,
     DEFAULT_SWARM: [
-        { 
-            agent_id: "agent_8012", 
-            name: "CryptoTracker", 
-            port: 8012, 
-            status: "online", 
-            tags: ["crypto"] 
-        },
-        { 
-            agent_id: "agent_8010", 
-            name: "RealWeather", 
-            port: 8010, 
-            status: "online", 
-            tags: ["weather"] 
-        },
-        { 
-            agent_id: "agent_8003", 
-            name: "CodeGuru", 
-            port: 8003, 
-            status: "online", 
-            tags: ["code"] 
-        },
-        { 
-            agent_id: "agent_8013", 
-            name: "WikiBrain", 
-            port: 8013, 
-            status: "online", 
-            tags: ["knowledge"] 
-        },
-        { 
-            agent_id: "agent_8005", 
-            name: "MathWiz", 
-            port: 8005, 
-            status: "online", 
-            tags: ["math"] 
-        }
+        { agent_id: "ag_demo_crypto", name: "CryptoTracker", status: "online", tags: ["crypto"], capabilities: [{name: "get_price"}], total_requests_served: 1247, trust_score: 5 },
+        { agent_id: "ag_demo_weather", name: "RealWeather", status: "online", tags: ["weather"], capabilities: [{name: "get_weather"}], total_requests_served: 3891, trust_score: 4 },
+        { agent_id: "ag_demo_wiki", name: "WikiBrain", status: "online", tags: ["knowledge"], capabilities: [{name: "summary"}], total_requests_served: 892, trust_score: 5 },
+        { agent_id: "ag_demo_translator", name: "RealTranslator", status: "online", tags: ["translate"], capabilities: [{name: "translate"}], total_requests_served: 2156, trust_score: 4 },
+        { agent_id: "ag_demo_math", name: "MathWiz", status: "online", tags: ["math"], capabilities: [{name: "calculate"}], total_requests_served: 743, trust_score: 5 }
     ]
 };
-
 // --- GLOBAL STATE ---
 let state = {
     agents: [],
@@ -192,13 +158,15 @@ async function apiFetch(endpoint, options = {}) {
 async function fetchRegistrySync() {
     const start = performance.now();
     try {
-        // Parallel fetch core metrics
-        const [rootRes, healthRes, agentsRes] = await Promise.all([
-            apiFetch('/'),
-            apiFetch('/health'),
-            apiFetch('/api/v1/agents')
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 sec timeout
+
+        const [rootRes, agentsRes] = await Promise.all([
+            apiFetch('/', { signal: controller.signal }),
+            apiFetch('/api/v1/agents', { signal: controller.signal })
         ]);
         
+        clearTimeout(timeoutId);
         const ms = Math.round(performance.now() - start);
         
         state.isOffline = false;
@@ -210,14 +178,19 @@ async function fetchRegistrySync() {
             online: state.agents.filter(a => a.status === 'online').length,
             messages: rootRes.total_messages_relayed || 0
         });
-
         updateCanvasUI();
         triggerCorePulse();
     } catch (e) {
         if (!state.isOffline) {
             state.isOffline = true;
-            showToast('Registry Connection Lost. Running Offline Fallback.', 'danger');
+            showToast('API Unreachable. Running in Demo Mode.', 'warning');
             state.agents = CONFIG.DEFAULT_SWARM;
+            updateStats({
+                latency: 0, 
+                total: CONFIG.DEFAULT_SWARM.length,
+                online: CONFIG.DEFAULT_SWARM.length,
+                messages: 1337
+            });
             updateCanvasUI();
         }
     }
@@ -259,7 +232,12 @@ async function handleSearch(query) {
 // --- UI UPDATES ---
 
 function updateStats(newStats) {
-    animateCount(DOM.statLatency, state.stats.latency, newStats.latency, ' ms');
+    if (state.isOffline) {
+        DOM.statLatency.textContent = "DEMO";
+    } else {
+        animateCount(DOM.statLatency, state.stats.latency, newStats.latency, ' ms');
+    }
+    
     animateCount(DOM.statAgents, state.stats.total, newStats.total, '');
     animateCount(DOM.statOnline, state.stats.online, newStats.online, '');
     animateCount(DOM.statMessages, state.stats.messages, newStats.messages, '');
