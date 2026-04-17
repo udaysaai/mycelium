@@ -1,0 +1,122 @@
+{
+  "title": "🌍 MYCELIUM — REAL WORLD MULTI-AGENT DEMONSTRATION REPORT",
+  "generated_at": "2026-04-07 12:14:32 UTC",
+  "chains": [
+    {
+      "name": "Crypto Price Translation",
+      "description": "Get Bitcoin price → Convert to INR → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Bitcoin Price in USD",
+          "agent": "crypto",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2218.1,
+      "status": "failed",
+      "started_at": "2026-04-07T12:14:34.861358+00:00",
+      "completed_at": "2026-04-07T12:14:37.079461+00:00"
+    },
+    {
+      "name": "Global Weather in Hindi",
+      "description": "Get REAL weather of Tokyo → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Live Weather for Tokyo",
+          "agent": "weather",
+          "agent_id": "ag_3264c51d5f57",
+          "capability": "get_live_weather",
+          "inputs": {
+            "city": "Tokyo"
+          },
+          "output": {},
+          "time_ms": 4648.7,
+          "is_real_data": false,
+          "status": "success"
+        },
+        {
+          "step": 2,
+          "label": "Translate Weather to Hindi",
+          "agent": "translator",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 6865.6,
+      "status": "failed",
+      "started_at": "2026-04-07T12:14:37.079965+00:00",
+      "completed_at": "2026-04-07T12:14:43.945588+00:00"
+    },
+    {
+      "name": "Knowledge Translation",
+      "description": "Get Wikipedia summary of 'Artificial Intelligence' → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get AI Wikipedia Summary",
+          "agent": "wiki",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2219.2,
+      "status": "failed",
+      "started_at": "2026-04-07T12:14:43.946016+00:00",
+      "completed_at": "2026-04-07T12:14:46.165276+00:00"
+    },
+    {
+      "name": "Multi-City Weather",
+      "description": "Get REAL weather for Mumbai and convert temperature description to Japanese",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Mumbai Weather",
+          "agent": "weather",
+          "agent_id": "ag_3264c51d5f57",
+          "capability": "get_live_weather",
+          "inputs": {
+            "city": "Mumbai"
+          },
+          "output": {},
+          "time_ms": 4603.7,
+          "is_real_data": false,
+          "status": "success"
+        },
+        {
+          "step": 2,
+          "label": "Translate to Japanese",
+          "agent": "translator",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 6827.1,
+      "status": "failed",
+      "started_at": "2026-04-07T12:14:46.170594+00:00",
+      "completed_at": "2026-04-07T12:14:52.997809+00:00"
+    },
+    {
+      "name": "Ethereum Full Pipeline",
+      "description": "Ethereum price → Convert to EUR → Get Ethereum Wikipedia info",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Ethereum Price",
+          "agent": "crypto",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2215.1,
+      "status": "failed",
+      "started_at": "2026-04-07T12:14:52.998420+00:00",
+      "completed_at": "2026-04-07T12:14:55.213595+00:00"
+    }
+  ],
+  "summary": {
+    "total_chains": 5,
+    "successful_chains": 0,
+    "total_steps_executed": 7,
+    "steps_with_real_data": 0,
+    "unique_agents_used": 1,
+    "total_time_ms": 20345.1
+  }
+}

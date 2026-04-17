@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mycelium | US Neural</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="spatial-ui dark-theme">
+    <div id="toast-container" class="toast-container"></div>
+    <div id="tooltip-container" class="agent-tooltip hidden"></div>
+
+    <header class="top-nav">
+        <div class="logo">
+            <span class="logo-icon">🍄</span>
+            <h1 class="branding-title">MYCELIUM</h1>
+        </div>
+        
+        <div class="search-bar-container">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="discovery-search" class="search-input" placeholder="Discover agents... (Cmd+K)">
+                <span id="search-results-count" class="search-results hidden">0</span>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <div class="network-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Latency</span>
+                    <span id="stat-latency" class="stat-value">-- ms</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Agents</span>
+                    <span id="stat-agents" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Online</span>
+                    <span id="stat-online" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Messages</span>
+                    <span id="stat-messages" class="stat-value">0</span>
+                </div>
+            </div>
+            <button id="theme-toggle" class="theme-btn" title="Toggle Theme">☀️/🌙</button>
+        </div>
+    </header>
+
+    <main class="spatial-canvas">
+        <canvas id="filament-canvas"></canvas>
+        <div id="registry-core" class="registry-core">
+            <div class="core-inner"></div>
+        </div>
+        
+        <div id="empty-state" class="empty-state hidden">
+            <div class="empty-icon">🍄</div>
+            <h2>No agents detected on the network</h2>
+            <p>Start the registry server and deploy your first agent</p>
+            <div class="code-snippet text-mono">python -m server.app</div>
+            <a href="https://github.com" class="github-link" target="_blank">View Documentation</a>
+        </div>
+
+        <div id="agent-field" class="agent-field">
+            <!-- Dynamic Frosted Pill Nodes injected here -->
+        </div>
+    </main>
+
+    <!-- macOS Style Dock -->
+    <nav class="dock">
+        <button id="cmd-deploy" class="dock-item"><span>+ Deploy</span></button>
+        <button id="cmd-chain" class="dock-item"><span>⛓️ Chain</span></button>
+        <button id="cmd-restart" class="dock-item"><span>Restart</span></button>
+        <button id="cmd-kill-all" class="dock-item danger"><span>Kill All</span></button>
+        <button id="cmd-logs" class="dock-item"><span>Logs</span></button>
+    </nav>
+
+    <div class="watermark">by US Neural</div>
+
+    <!-- Agent Telemetry Slide-in Sheet -->
+    <aside id="telemetry-sheet" class="telemetry-sheet hidden">
+        <div class="sheet-header">
+            <h2 id="agent-name">Agent Name</h2>
+            <button id="btn-close-telemetry" class="btn-close">×</button>
+        </div>
+        
+        <div class="sheet-content">
+            <div class="status-indicator">
+                <span id="sheet-status-dot" class="status-dot"></span>
+                <span id="agent-status-text">Active</span>
+            </div>
+
+            <section class="info-section">
+                <div class="info-row">
+                    <span class="info-label">Port</span>
+                    <span id="agent-port" class="info-value">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Path</span>
+                    <span id="agent-id" class="info-value text-mono">--</span>
+                </div>
+            </section>
+
+            <section class="control-section">
+                <div class="input-bar">
+                    <select id="capability-select" class="cap-select"></select>
+                </div>
+                <div class="input-bar">
+                    <input type="text" id="payload-input" placeholder='{"city":"Mumbai"}'>
+                    <button id="btn-send-payload" class="action-btn primary">Send</button>
+                </div>
+                <div class="pill-controls">
+                    <button id="btn-ping-agent" class="action-btn secondary">Ping</button>
+                    <button id="btn-terminate-node" class="action-btn destructive">Remove</button>
+                </div>
+            </section>
+            
+            <section class="log-section">
+                <h3 class="section-title">Agent Card / Result</h3>
+                <div class="log-container">
+                    <pre id="agent-json-feed">{ "status": "initializing..." }</pre>
+                </div>
+            </section>
+        </div>
+    </aside>
+
+    <!-- Deploy Modal -->
+    <div id="modal-deploy" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Deploy Agent</h2>
+                <button class="btn-close modal-deploy-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Agent Name</label>
+                    <input type="text" id="deploy-name" placeholder="e.g. WeatherBot" class="form-input">
+                </div>
+                <div class="input-group">
+                    <label>Description</label>
+                    <input type="text" id="deploy-desc" placeholder="What does this do?" class="form-input">
+                </div>
+                <div class="input-group">
+                    <label>Port</label>
+                    <input type="number" id="deploy-port" placeholder="e.g. 8015" class="form-input">
+                </div>
+                <div class="input-group">
+                    <label>Capabilities (comma separated)</label>
+                    <input type="text" id="deploy-caps" placeholder="e.g. get_weather, search" class="form-input">
+                </div>
+                <button id="btn-submit-deploy" class="action-btn primary full-width">Deploy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chain Builder Panel -->
+    <div id="modal-chain" class="modal-overlay hidden">
+        <div class="modal large-modal">
+            <div class="modal-header">
+                <h2>Multi-Agent Chain Builder</h2>
+                <button class="btn-close modal-chain-close">×</button>
+            </div>
+            <div class="modal-body chain-body">
+                <div id="chain-steps" class="chain-steps">
+                    <div class="empty-chain-text">Click agent pills on canvas to add to chain...</div>
+                </div>
+                <div class="chain-actions">
+                    <span id="chain-status" class="text-mono">0ms</span>
+                    <button id="btn-execute-chain" class="action-btn primary">Execute Chain</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Logs Terminal -->
+    <div id="panel-logs" class="logs-panel hidden">
+        <div class="logs-header">
+            <span>Global Terminal</span>
+            <div class="log-controls">
+                <input type="text" id="log-filter" class="search-input small" placeholder="Filter logs...">
+                <button class="btn-close log-close">_</button>
+            </div>
+        </div>
+        <div class="logs-body text-mono" id="global-logs-content">
+            <!-- Logs appear here -->
+        </div>
+    </div>
+
+    <!-- Right-click Context Menu -->
+    <ul id="context-menu" class="context-menu hidden">
+        <li id="ctx-view">View Card</li>
+        <li id="ctx-ping">Ping Agent</li>
+        <li id="ctx-send">Send Request</li>
+        <li id="ctx-copy">Copy Agent ID</li>
+        <li class="ctx-divider"></li>
+        <li id="ctx-remove" class="danger-text">Remove from Network</li>
+    </ul>
+
+    <script src="main.js"></script>
+</body>
+</html>

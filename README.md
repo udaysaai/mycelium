@@ -27,3 +27,22 @@
 ## The Problem
 
 AI agents are everywhere. But they're all **isolated**.
+
+## 🎨 Spatial Dashboard
+
+A visual control center for your Mycelium network. 
+Built with vanilla JS and glassmorphism design.
+
+**Features:**
+- 🌌 Floating agent pills orbiting the registry core
+- ⛓️ Canvas filament lines showing connections
+- 📊 Real-time network stats (Agents, Latency, Messages)
+- 🔍 Click any agent to inspect telemetry
+- 📡 Send requests directly from dashboard
+- 🎯 macOS-style dock controls
+
+**Run the Dashboard:**
+```bash
+cd dashboard
+npm install
+npm run dev

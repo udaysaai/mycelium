@@ -49,3 +49,10 @@ Thumbs.db
 # Mycelium specific
 *.log
 data/
+
+# Dashboard
+node_modules/
+dist/
+# .gitignore mein add karo
+Add-Content .gitignore "`ndashboard/node_modules/"
+Add-Content .gitignore "dashboard/dist/"

@@ -1,0 +1,556 @@
+{
+  "title": "🍄 MYCELIUM SYSTEM DIAGNOSTIC REPORT",
+  "generated_at": "2026-04-07 12:07:33 UTC",
+  "system_version": "0.1.0",
+  "tests": [
+    {
+      "name": "Registry Server Health Check",
+      "category": "Registry",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2319.5,
+      "details": "Server healthy. Agents registered: 2",
+      "data": {
+        "status": "healthy",
+        "agents_registered": 2,
+        "timestamp": "2026-04-07T12:07:35.425093+00:00"
+      },
+      "timestamp": "2026-04-07T12:07:35.426286+00:00"
+    },
+    {
+      "name": "Registry Root Endpoint",
+      "category": "Registry",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2219.4,
+      "details": "Registry v0.1.0 | Protocol v0.1.0 | 2 agents",
+      "data": {
+        "name": "🍄 Mycelium Registry",
+        "version": "0.1.0",
+        "protocol_version": "0.1.0",
+        "total_agents": 2,
+        "online_agents": 2,
+        "total_messages_relayed": 0,
+        "docs": "/docs",
+        "message": "The networking protocol for AI agents. 🍄"
+      },
+      "timestamp": "2026-04-07T12:07:37.645784+00:00"
+    },
+    {
+      "name": "Swagger Docs Available",
+      "category": "Registry",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2227.6,
+      "details": "Docs accessible at http://localhost:8000/docs",
+      "data": null,
+      "timestamp": "2026-04-07T12:07:39.873548+00:00"
+    },
+    {
+      "name": "ReDoc Available",
+      "category": "Registry",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2234.9,
+      "details": "ReDoc accessible at http://localhost:8000/redoc",
+      "data": null,
+      "timestamp": "2026-04-07T12:07:42.108784+00:00"
+    },
+    {
+      "name": "Register New Test Agent",
+      "category": "Registration",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2298.4,
+      "details": "Agent registered. Total on network: 3",
+      "data": {
+        "status": "registered",
+        "agent_id": "ag_test_diagnostic_001",
+        "message": "Agent 'DiagnosticBot' successfully registered on Mycelium! 🍄",
+        "total_agents_on_network": 3
+      },
+      "timestamp": "2026-04-07T12:07:44.407668+00:00"
+    },
+    {
+      "name": "Duplicate Registration (Should Update)",
+      "category": "Registration",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2263.5,
+      "details": "Re-registration successful (upsert working)",
+      "data": null,
+      "timestamp": "2026-04-07T12:07:46.671411+00:00"
+    },
+    {
+      "name": "Get Agent By ID",
+      "category": "Registration",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2270.2,
+      "details": "Found agent: DiagnosticBot-Updated v0.0.2",
+      "data": {
+        "agent_id": "ag_test_diagnostic_001",
+        "name": "DiagnosticBot-Updated",
+        "description": "Updated description",
+        "version": "0.0.2",
+        "author": null,
+        "capabilities": [],
+        "endpoint": null,
+        "pricing": {
+          "model": "free",
+          "amount": 0.0,
+          "currency": "USD"
+        },
+        "languages": [
+          "english"
+        ],
+        "tags": [
+          "test"
+        ],
+        "trust_score": 0.0,
+        "total_requests_served": 0,
+        "success_rate": 0.0,
+        "avg_response_time_ms": null,
+        "registered_at": "2026-04-07T12:07:46.670387+00:00",
+        "last_seen": "2026-04-07T12:07:46.670396+00:00",
+        "status": "online",
+        "protocol_version": "0.1.0"
+      },
+      "timestamp": "2026-04-07T12:07:48.941915+00:00"
+    },
+    {
+      "name": "Get Non-Existent Agent (Should 404)",
+      "category": "Registration",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2268.4,
+      "details": "Correctly returned 404 for missing agent",
+      "data": null,
+      "timestamp": "2026-04-07T12:07:51.210475+00:00"
+    },
+    {
+      "name": "List All Agents",
+      "category": "Registration",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2251.8,
+      "details": "Found 3 agents: WeatherBuddy, LinguaBot, DiagnosticBot-Updated",
+      "data": {
+        "count": 3,
+        "names": [
+          "WeatherBuddy",
+          "LinguaBot",
+          "DiagnosticBot-Updated"
+        ]
+      },
+      "timestamp": "2026-04-07T12:07:53.462560+00:00"
+    },
+    {
+      "name": "Discover by Keyword: 'weather'",
+      "category": "Discovery",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2227.1,
+      "details": "Found 1 weather agents: WeatherBuddy",
+      "data": null,
+      "timestamp": "2026-04-07T12:07:55.690611+00:00"
+    },
+    {
+      "name": "Discover by Keyword: 'translate'",
+      "category": "Discovery",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2278.9,
+      "details": "Found 1 translator agents: LinguaBot",
+      "data": null,
+      "timestamp": "2026-04-07T12:07:57.969707+00:00"
+    },
+    {
+      "name": "Discover Non-Existent Capability",
+      "category": "Discovery",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2267.6,
+      "details": "Correctly returned 0 results for nonsense query",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:00.237778+00:00"
+    },
+    {
+      "name": "Discover with Tag Filter",
+      "category": "Discovery",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2252.0,
+      "details": "Tag-filtered discovery returned 1 results",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:02.490001+00:00"
+    },
+    {
+      "name": "WeatherBuddy Agent Health",
+      "category": "Agent Health",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2219.6,
+      "details": "Agent: WeatherBuddy | Capabilities: get_weather, get_forecast | Served: 0",
+      "data": {
+        "status": "healthy",
+        "agent": "WeatherBuddy",
+        "agent_id": "ag_3264c51d5f57",
+        "capabilities": [
+          "get_weather",
+          "get_forecast"
+        ],
+        "requests_served": 0
+      },
+      "timestamp": "2026-04-07T12:08:04.709870+00:00"
+    },
+    {
+      "name": "WeatherBuddy Agent Card",
+      "category": "Agent Health",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2221.1,
+      "details": "Card: WeatherBuddy v1.0.0 | Tags: ['weather', 'forecast', 'temperature', 'climate']",
+      "data": {
+        "agent_id": "ag_3264c51d5f57",
+        "name": "WeatherBuddy",
+        "description": "Provides current weather and forecasts for any city worldwide",
+        "version": "1.0.0",
+        "author": "your@email.com",
+        "capabilities": [
+          {
+            "name": "get_weather",
+            "description": "Get current weather for a city",
+            "input_schema": {
+              "fields": {
+                "city": "string — city name"
+              },
+              "required": [
+                "city"
+              ],
+              "example": null
+            },
+            "output_schema": {
+              "fields": {
+                "city": "string",
+                "temperature": "number (celsius)",
+                "condition": "string",
+                "humidity": "number (percentage)"
+              },
+              "required": [],
+              "example": null
+            },
+            "tags": [],
+            "version": "1.0.0",
+            "is_async": false,
+            "avg_response_time_ms": null,
+            "cost_per_request": null
+          },
+          {
+            "name": "get_forecast",
+            "description": "Get 3-day weather forecast for a city",
+            "input_schema": {
+              "fields": {
+                "city": "string",
+                "days": "integer (1-7)"
+              },
+              "required": [
+                "city",
+                "days"
+              ],
+              "example": null
+            },
+            "output_schema": {
+              "fields": {
+                "city": "string",
+                "forecast": "array of daily forecasts"
+              },
+              "required": [],
+              "example": null
+            },
+            "tags": [],
+            "version": "1.0.0",
+            "is_async": false,
+            "avg_response_time_ms": null,
+            "cost_per_request": null
+          }
+        ],
+        "endpoint": "http://127.0.0.1:8001",
+        "pricing": {
+          "model": "free",
+          "amount": 0.0,
+          "currency": "USD"
+        },
+        "languages": [
+          "english",
+          "hindi"
+        ],
+        "tags": [
+          "weather",
+          "forecast",
+          "temperature",
+          "climate"
+        ],
+        "trust_score": 0.0,
+        "total_requests_served": 0,
+        "success_rate": 0.0,
+        "avg_response_time_ms": null,
+        "registered_at": "2026-04-07T12:07:02.125286Z",
+        "last_seen": "2026-04-07T12:07:02.125292Z",
+        "status": "online",
+        "protocol_version": "0.1.0"
+      },
+      "timestamp": "2026-04-07T12:08:06.931410+00:00"
+    },
+    {
+      "name": "LinguaBot Agent Health",
+      "category": "Agent Health",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2213.8,
+      "details": "Agent: LinguaBot | Capabilities: translate, detect_language | Served: 0",
+      "data": {
+        "status": "healthy",
+        "agent": "LinguaBot",
+        "agent_id": "ag_256d51dc0dac",
+        "capabilities": [
+          "translate",
+          "detect_language"
+        ],
+        "requests_served": 0
+      },
+      "timestamp": "2026-04-07T12:08:09.145460+00:00"
+    },
+    {
+      "name": "Weather Request: Pune",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4756.5,
+      "details": "Pune: 28°C, Partly Cloudy, Humidity: 65%",
+      "data": {
+        "city": "Pune",
+        "temperature": 28,
+        "condition": "Partly Cloudy",
+        "humidity": 65,
+        "unit": "celsius"
+      },
+      "timestamp": "2026-04-07T12:08:13.902513+00:00"
+    },
+    {
+      "name": "Weather Request: Mumbai",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4583.2,
+      "details": "Mumbai: 32°C, Humid",
+      "data": {
+        "city": "Mumbai",
+        "temperature": 32,
+        "condition": "Humid",
+        "humidity": 80,
+        "unit": "celsius"
+      },
+      "timestamp": "2026-04-07T12:08:18.485945+00:00"
+    },
+    {
+      "name": "Weather Forecast Request",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4615.6,
+      "details": "Delhi 3-day forecast received: 3 days",
+      "data": {
+        "city": "Delhi",
+        "forecast": [
+          {
+            "day": 1,
+            "temperature_high": 30,
+            "temperature_low": 20,
+            "condition": "Thunderstorm"
+          },
+          {
+            "day": 2,
+            "temperature_high": 32,
+            "temperature_low": 21,
+            "condition": "Partly Cloudy"
+          },
+          {
+            "day": 3,
+            "temperature_high": 29,
+            "temperature_low": 24,
+            "condition": "Thunderstorm"
+          }
+        ],
+        "days": 3
+      },
+      "timestamp": "2026-04-07T12:08:23.101797+00:00"
+    },
+    {
+      "name": "Translation: English → Hindi",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4660.9,
+      "details": "'hello' → 'नमस्ते' (confidence: 0.99)",
+      "data": {
+        "translated": "नमस्ते",
+        "from": "english",
+        "to": "hindi",
+        "confidence": 0.99
+      },
+      "timestamp": "2026-04-07T12:08:27.762912+00:00"
+    },
+    {
+      "name": "Translation: English → Marathi",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4625.3,
+      "details": "'hello' → 'नमस्कार'",
+      "data": {
+        "translated": "नमस्कार",
+        "from": "english",
+        "to": "marathi",
+        "confidence": 0.99
+      },
+      "timestamp": "2026-04-07T12:08:32.388532+00:00"
+    },
+    {
+      "name": "Language Detection",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4598.8,
+      "details": "Detected: hindi (confidence: 0.9)",
+      "data": {
+        "language": "hindi",
+        "confidence": 0.9
+      },
+      "timestamp": "2026-04-07T12:08:36.987638+00:00"
+    },
+    {
+      "name": "Invalid Capability Request",
+      "category": "Communication",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 4593.8,
+      "details": "Correctly returned 'capability_not_found' for invalid capability",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:41.581695+00:00"
+    },
+    {
+      "name": "Multi-Agent Chain: Weather → Translate",
+      "category": "Chain",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 7030.3,
+      "details": "Chain complete! Weather: 'Bangalore is 24 degrees and Rainy' → Hindi: '[Translation of 'Bangalore is 24 degrees and Rainy' to hindi — connect real API]'",
+      "data": {
+        "step1_weather": {
+          "city": "Bangalore",
+          "temperature": 24,
+          "condition": "Rainy",
+          "humidity": 75,
+          "unit": "celsius"
+        },
+        "step2_translation": {
+          "translated": "[Translation of 'Bangalore is 24 degrees and Rainy' to hindi — connect real API]",
+          "from": "english",
+          "to": "hindi",
+          "confidence": 0.0,
+          "note": "Mock translation — integrate Google/DeepL API for production"
+        }
+      },
+      "timestamp": "2026-04-07T12:08:48.612678+00:00"
+    },
+    {
+      "name": "Message to Non-Existent Agent",
+      "category": "Error Handling",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2217.2,
+      "details": "Correctly returned 404 for non-existent agent",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:50.830315+00:00"
+    },
+    {
+      "name": "Empty Search Query",
+      "category": "Error Handling",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2217.0,
+      "details": "Handled empty query gracefully (status: 200)",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:53.047519+00:00"
+    },
+    {
+      "name": "Deregister Test Agent",
+      "category": "Cleanup",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2213.2,
+      "details": "Test agent cleaned up successfully",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:55.261268+00:00"
+    },
+    {
+      "name": "Import Mycelium SDK",
+      "category": "SDK",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 144.1,
+      "details": "All core classes imported successfully",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:55.405840+00:00"
+    },
+    {
+      "name": "Create Agent Instance",
+      "category": "SDK",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 2.9,
+      "details": "Agent created: TestSDK (ID: ag_41490b32b35c)",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:55.408932+00:00"
+    },
+    {
+      "name": "Register Capability on Agent",
+      "category": "SDK",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 1.0,
+      "details": "Capability 'test_cap' registered via decorator",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:55.410063+00:00"
+    },
+    {
+      "name": "Create Message Objects",
+      "category": "SDK",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 0.9,
+      "details": "Request, Response, and Ping messages created correctly",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:55.411074+00:00"
+    },
+    {
+      "name": "Agent Card Capabilities Check",
+      "category": "SDK",
+      "status": "PASS",
+      "icon": "✅",
+      "time_ms": 0.0,
+      "details": "is_capable_of() working correctly",
+      "data": null,
+      "timestamp": "2026-04-07T12:08:55.411204+00:00"
+    }
+  ],
+  "summary": {
+    "total_tests": 32,
+    "passed": 32,
+    "failed": 0,
+    "warnings": 0,
+    "pass_rate": 100.0,
+    "total_time_ms": 82294.5
+  }
+}
