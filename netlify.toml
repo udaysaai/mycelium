@@ -1,7 +1,7 @@
 [build]
   base = "antigrav_dashboard"
   command = "npm run build"
-  publish = "antigrav_dashboard/dist"
+  publish = "dist"
 
 [[redirects]]
   from = "/*"
