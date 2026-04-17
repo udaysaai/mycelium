@@ -2,13 +2,47 @@
 
 // --- CONFIGURATION ---
 const CONFIG = {
-    API_BASE: 'http://localhost:8000',
-    POLL_INTERVAL: 3000,
-    CANVAS_FPS: 60,
+    // Netlify pe hosted hoga toh environment 
+    // variable se aayega, warna localhost
+    API_BASE: import.meta.env.VITE_API_BASE 
+              || 'http://localhost:8000',
+    REFRESH_INTERVAL: 3000,
     DEFAULT_SWARM: [
-        { agent_id: 'ag_fallback_01', name: 'CryptoTracker', status: 'online', capabilities: [{name:'get_crypto_price'}], tags: ['crypto'], requests_served: 0, trust_score: 1.0 },
-        { agent_id: 'ag_fallback_02', name: 'RealWeather', status: 'online', capabilities: [{name:'get_live_weather'}], tags: ['weather'], requests_served: 0, trust_score: 1.0 },
-        { agent_id: 'ag_fallback_03', name: 'CoreRouter', status: 'busy', capabilities: [{name:'route'}], tags: ['core'], requests_served: 0, trust_score: 1.0 }
+        { 
+            agent_id: "agent_8012", 
+            name: "CryptoTracker", 
+            port: 8012, 
+            status: "online", 
+            tags: ["crypto"] 
+        },
+        { 
+            agent_id: "agent_8010", 
+            name: "RealWeather", 
+            port: 8010, 
+            status: "online", 
+            tags: ["weather"] 
+        },
+        { 
+            agent_id: "agent_8003", 
+            name: "CodeGuru", 
+            port: 8003, 
+            status: "online", 
+            tags: ["code"] 
+        },
+        { 
+            agent_id: "agent_8013", 
+            name: "WikiBrain", 
+            port: 8013, 
+            status: "online", 
+            tags: ["knowledge"] 
+        },
+        { 
+            agent_id: "agent_8005", 
+            name: "MathWiz", 
+            port: 8005, 
+            status: "online", 
+            tags: ["math"] 
+        }
     ]
 };
 
