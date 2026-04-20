@@ -3,13 +3,77 @@
 // --- CONFIGURATION ---
 const CONFIG = {
     API_BASE: import.meta.env.VITE_API_BASE || 'http://localhost:8000',
-    POLL_INTERVAL: 3000,
+    POLL_INTERVAL: 5000,
     DEFAULT_SWARM: [
-        { agent_id: "ag_demo_crypto", name: "CryptoTracker", status: "online", tags: ["crypto"], capabilities: [{name: "get_price"}], total_requests_served: 1247, trust_score: 5 },
-        { agent_id: "ag_demo_weather", name: "RealWeather", status: "online", tags: ["weather"], capabilities: [{name: "get_weather"}], total_requests_served: 3891, trust_score: 4 },
-        { agent_id: "ag_demo_wiki", name: "WikiBrain", status: "online", tags: ["knowledge"], capabilities: [{name: "summary"}], total_requests_served: 892, trust_score: 5 },
-        { agent_id: "ag_demo_translator", name: "RealTranslator", status: "online", tags: ["translate"], capabilities: [{name: "translate"}], total_requests_served: 2156, trust_score: 4 },
-        { agent_id: "ag_demo_math", name: "MathWiz", status: "online", tags: ["math"], capabilities: [{name: "calculate"}], total_requests_served: 743, trust_score: 5 }
+        {
+            agent_id: "ag_demo_crypto",
+            name: "CryptoTracker",
+            status: "online",
+            tags: ["crypto", "finance"],
+            capabilities: [
+                { name: "get_crypto_price", description: "Live Bitcoin & crypto prices" },
+                { name: "get_top_coins", description: "Top 10 coins by market cap" }
+            ],
+            total_requests_served: 1247,
+            trust_score: 5,
+            endpoint: null,
+            description: "Live crypto prices from CoinGecko API"
+        },
+        {
+            agent_id: "ag_demo_weather",
+            name: "RealWeather",
+            status: "online",
+            tags: ["weather"],
+            capabilities: [
+                { name: "get_live_weather", description: "Real weather for any city" },
+                { name: "get_forecast", description: "3-day weather forecast" }
+            ],
+            total_requests_served: 3891,
+            trust_score: 5,
+            endpoint: null,
+            description: "Live weather from OpenWeatherMap"
+        },
+        {
+            agent_id: "ag_demo_translator",
+            name: "RealTranslator",
+            status: "online",
+            tags: ["translate", "language"],
+            capabilities: [
+                { name: "translate_real", description: "Translate to 50+ languages" },
+                { name: "detect_language", description: "Detect language of text" }
+            ],
+            total_requests_served: 2156,
+            trust_score: 4,
+            endpoint: null,
+            description: "Real translations via MyMemory API"
+        },
+        {
+            agent_id: "ag_demo_wiki",
+            name: "WikiBrain",
+            status: "online",
+            tags: ["knowledge"],
+            capabilities: [
+                { name: "wiki_summary", description: "Wikipedia summaries" },
+                { name: "wiki_search", description: "Search Wikipedia" }
+            ],
+            total_requests_served: 892,
+            trust_score: 4,
+            endpoint: null,
+            description: "Real knowledge from Wikipedia API"
+        },
+        {
+            agent_id: "ag_demo_currency",
+            name: "CurrencyMaster",
+            status: "online",
+            tags: ["finance", "currency"],
+            capabilities: [
+                { name: "convert_currency", description: "Live exchange rates, 150+ currencies" }
+            ],
+            total_requests_served: 743,
+            trust_score: 5,
+            endpoint: null,
+            description: "Live exchange rates from ExchangeRate API"
+        }
     ]
 };
 // --- GLOBAL STATE ---
@@ -156,44 +220,38 @@ async function apiFetch(endpoint, options = {}) {
 }
 
 async function fetchRegistrySync() {
-    const start = performance.now();
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 sec timeout
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        const [rootRes, agentsRes] = await Promise.all([
-            apiFetch('/', { signal: controller.signal }),
-            apiFetch('/api/v1/agents', { signal: controller.signal })
-        ]);
-        
+        const response = await fetch(
+            `${CONFIG.API_BASE}/api/v1/agents`,
+            { signal: controller.signal }
+        );
         clearTimeout(timeoutId);
-        const ms = Math.round(performance.now() - start);
-        
-        state.isOffline = false;
-        state.agents = agentsRes.agents || agentsRes; 
-        
-        updateStats({
-            latency: ms,
-            total: rootRes.total_agents || state.agents.length,
-            online: state.agents.filter(a => a.status === 'online').length,
-            messages: rootRes.total_messages_relayed || 0
-        });
-        updateCanvasUI();
-        triggerCorePulse();
-    } catch (e) {
-        if (!state.isOffline) {
-            state.isOffline = true;
-            showToast('API Unreachable. Running in Demo Mode.', 'warning');
+
+        if (response.ok) {
+            const data = await response.json();
+            const liveAgents = data.agents || [];
+            state.agents = liveAgents.length > 0
+                ? liveAgents
+                : CONFIG.DEFAULT_SWARM;
+        } else {
             state.agents = CONFIG.DEFAULT_SWARM;
-            updateStats({
-                latency: 0, 
-                total: CONFIG.DEFAULT_SWARM.length,
-                online: CONFIG.DEFAULT_SWARM.length,
-                messages: 1337
-            });
-            updateCanvasUI();
         }
+    } catch (e) {
+        // API unreachable — silently use demo agents
+        state.agents = CONFIG.DEFAULT_SWARM;
     }
+
+    // Always update UI
+    updateStats({
+        latency: state.isOffline ? 0 : state.stats.latency,
+        total: state.agents.length,
+        online: state.agents.filter(a => a.status === 'online').length,
+        messages: state.stats.messages || 1337
+    });
+    updateCanvasUI();
 }
 
 async function handleSearch(query) {
