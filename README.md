@@ -4,26 +4,22 @@
 
 ### Watch 3 AI agents collaborate live — no glue code, no orchestration
 
-**[▶ See Live Demo](https://mycelium-agents.netlify.app)** • 
-**[Try it now](#-quick-start)**
+**[▶ See Live Demo](https://mycelium-agents.netlify.app)** • **[Try it now](#-quick-start)**
 
-```bash
-pip install mycelium-agents
+[![Stars](https://img.shields.io/github/stars/udaysaai/mycelium?style=social)](https://github.com/udaysaai/mycelium)
+[![PyPI](https://img.shields.io/badge/PyPI-mycelium--agents-blue)](https://pypi.org/project/mycelium-agents/)
+[![Dashboard](https://img.shields.io/badge/Dashboard-Live-brightgreen)](https://mycelium-agents.netlify.app)
 
-Bitcoin price → INR conversion → Hindi translation.
-3 agents. 3 live APIs. 1.1 seconds. Zero orchestration code.
-Stars
-PyPI
-Dashboard
+*Bitcoin price → INR conversion → Hindi translation.*
+*3 agents. 3 live APIs. 1.1 seconds. Zero orchestration code.*
 
-</div> ```
+</div>
 
 ---
 
 ## The Problem
 
 AI agents are everywhere. But they're all **isolated**.
-
 
 ```
 Your Coding Agent ──── cannot talk to ──── Research Agent
@@ -91,6 +87,30 @@ result = network.request(agents[0].agent_id, "translate",
 
 ---
 
+## 🧠 v0.2.0 — Semantic Search
+
+Agents are now found by **MEANING**, not just keywords.
+
+```python
+# Before (v0.1 — keyword only)
+network.discover("weather")
+# Only finds agents with "weather" in name
+
+# Now (v0.2 — semantic)
+network.discover("I need temperature data for my city")
+# Automatically finds WeatherAgent ✅
+
+network.discover("Speak Hindi please")
+# Automatically finds TranslatorAgent ✅
+
+network.discover("What is the value of digital currency?")
+# Automatically finds CryptoAgent ✅
+```
+
+Powered by **ChromaDB** + **sentence-transformers**. Runs locally. No API key needed.
+
+---
+
 ## 🎨 Spatial Dashboard
 
 A visual control center for your Mycelium network. Built with vanilla JS and glassmorphism design.
@@ -137,16 +157,16 @@ Open: **http://localhost:5173**
 ┌─────────────────────────────────────────────────────┐
 │                  MYCELIUM NETWORK                   │
 │                                                     │
-│  ┌───────────┐    ┌──────────────┐    ┌───────────┐ │
-│  │ Agent A   │──▶│   REGISTRY   │◀───│ Agent B   │ │
-│  │ (Travel)  │    │              │    │ (Payment) │ │
-│  └────┬──────┘    │ • Discovery  │    └─────┬─────┘ │
-│       │           │ • Matching   │          │       │
-│       │           │ • Trust      │          │       │
-│       │           │ • Relay      │          │       │
-│       │           └──────────────┘          │       │
-│       │                                     │       │
-│       └────── DIRECT COMMUNICATION ─────────┘       │
+│  ┌──────────┐    ┌──────────────┐    ┌──────────┐  │
+│  │ Agent A  │───▶│   REGISTRY   │◀───│ Agent B  │  │
+│  │ (Travel) │    │              │    │ (Payment)│  │
+│  └────┬─────┘    │ • Discovery  │    └────┬─────┘  │
+│       │          │ • Semantic   │         │        │
+│       │          │ • Trust      │         │        │
+│       │          │ • Relay      │         │        │
+│       │          └──────────────┘         │        │
+│       │                                   │        │
+│       └────── DIRECT COMMUNICATION ───────┘        │
 │                                                     │
 └─────────────────────────────────────────────────────┘
 ```
@@ -232,7 +252,7 @@ python scripts/system_check.py
 
 ## 🗺️ Roadmap
 
-**v0.1.1 ✅ Current**
+**v0.1.1 ✅ Done**
 - [x] Core protocol
 - [x] Python SDK (`pip install mycelium-agents`)
 - [x] Registry server (FastAPI)
@@ -243,17 +263,17 @@ python scripts/system_check.py
 - [x] Spatial dashboard (live on Netlify)
 - [x] 32/32 diagnostic tests passing
 
-**v0.2.0 🔜 June 2026**
-- [ ] Semantic search (ChromaDB vectors)
+**v0.2.0 ✅ Done**
+- [x] Semantic search (ChromaDB + sentence-transformers)
+- [x] Agents found by MEANING not keywords
+- [x] 8/8 semantic tests passing
+
+**v0.3.0 📋 Next**
 - [ ] Authentication (HMAC + API keys)
-- [ ] Rate limiting
 - [ ] CLI tool (`mycelium discover "translator"`)
 - [ ] JavaScript/TypeScript SDK
-- [ ] WebSocket support (real-time)
-
-**v0.3.0 📋 August 2026**
+- [ ] WebSocket support
 - [ ] Agent Marketplace (web UI)
-- [ ] Payment layer (agents pay agents)
 - [ ] LangChain + CrewAI plugins
 - [ ] Docker deployment
 
