@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mycelium | Spatial Dashboard</title>
+    <title>Mycelium — US Neural Protocol Labs</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230A0A0C'/><text y='72' x='10' font-size='60' font-family='monospace' font-weight='900' fill='white'>N</text></svg>">
 </head>
 <body class="spatial-ui dark-theme">
 
@@ -27,42 +28,54 @@
         <div class="ctx-item danger" id="ctx-remove">🗑 Remove from Network</div>
     </div>
 
-    <!-- TOP NAV -->
     <header class="top-nav">
         <div class="logo">
-            <span class="logo-icon">🍄</span>
-            <h1 class="branding-title">MYCELIUM</h1>
+            <div class="logo-mark">
+                <span class="logo-us">US</span>
+                <span class="logo-neural">NEURAL</span>
+            </div>
+            <div class="logo-divider">|</div>
+            <div class="logo-product">
+                <span class="product-name">MYCELIUM</span>
+                <span class="product-version">v0.2.0</span>
+            </div>
         </div>
 
-        <!-- SEARCH BAR -->
+        <!-- Search Bar -->
         <div class="search-bar-wrap">
             <span class="search-icon">⌕</span>
-            <input 
-                type="text" 
-                id="discovery-search" 
-                class="discovery-search" 
-                placeholder="Search agents... (⌘K)"
+            <input
+                type="text"
+                id="discovery-search"
+                class="discovery-search"
+                placeholder="Search US Neural Registry... (⌘K)"
             >
-            <span id="search-results-count" class="search-badge hidden">0</span>
+            <span id="search-results-count" 
+                class="search-badge hidden">0</span>
         </div>
+
 
         <div class="nav-right">
             <div class="network-stats">
                 <div class="stat-item">
                     <span class="stat-label">Latency</span>
-                    <span id="stat-latency" class="stat-value">-- ms</span>
+                    <span id="stat-latency" 
+                        class="stat-value">-- ms</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Agents</span>
-                    <span id="stat-agents" class="stat-value">0</span>
+                    <span class="stat-label">Nodes</span>
+                    <span id="stat-agents" 
+                        class="stat-value">0</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">Online</span>
-                    <span id="stat-online" class="stat-value">0</span>
+                    <span id="stat-online" 
+                        class="stat-value">0</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label">Messages</span>
-                    <span id="stat-messages" class="stat-value">0</span>
+                    <span class="stat-label">Signals</span>
+                    <span id="stat-messages" 
+                        class="stat-value">0</span>
                 </div>
             </div>
             <button id="theme-toggle" class="theme-btn">◐</button>
@@ -99,14 +112,29 @@
 
     <!-- DOCK -->
     <nav class="dock">
-        <button id="cmd-deploy" class="dock-item">+ Deploy</button>
-        <button id="cmd-chain" class="dock-item">⛓ Chain</button>
-        <button id="cmd-logs" class="dock-item">📋 Logs</button>
-        <button id="cmd-restart" class="dock-item">↺ Restart</button>
-        <button id="cmd-kill-all" class="dock-item danger">✕ Kill All</button>
+        <button id="cmd-deploy" class="dock-item">
+            + Initialize
+        </button>
+        <button id="cmd-chain" class="dock-item">
+            ⛓ Execute Chain
+        </button>
+        <button id="cmd-logs" class="dock-item">
+            ◈ System Logs
+        </button>
+        <button id="cmd-restart" class="dock-item">
+            ↺ Restart Core
+        </button>
+        <button id="cmd-kill-all" class="dock-item danger">
+            ✕ Terminate Swarm
+        </button>
     </nav>
 
-    <div class="watermark">by US Neural</div>
+    <!-- Replace watermark div -->
+    <div class="watermark">
+        <span class="wm-company">US NEURAL</span>
+        <span class="wm-divider">//</span>
+        <span class="wm-product">PROTOCOL LABS</span>
+    </div>
 
     <!-- TELEMETRY SHEET -->
     <aside id="telemetry-sheet" class="telemetry-sheet hidden">
@@ -266,6 +294,20 @@
             </div>
         </div>
         <div id="global-logs-content" class="global-logs-content"></div>
+    </div>
+
+    <!-- US Neural Boot Screen -->
+    <div id="boot-screen" class="boot-screen">
+        <div class="boot-content">
+            <div class="boot-logo">US NEURAL</div>
+            <div class="boot-sub">PROTOCOL LABS</div>
+            <div class="boot-line">
+                INITIALIZING MYCELIUM REGISTRY...
+            </div>
+            <div class="boot-bar">
+                <div class="boot-progress"></div>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="main.js"></script>

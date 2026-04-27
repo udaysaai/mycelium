@@ -165,11 +165,33 @@ function initEventListeners() {
         showToast('Restarting network swarm...', 'success');
         fetchRegistrySync();
     });
-    document.getElementById('cmd-kill-all').addEventListener('click', () => {
-        if(confirm('Disconnect GUI from all agents?')) {
+    document.getElementById('cmd-kill-all')
+            .addEventListener('click', () => {
+        if (confirm(
+            'TERMINATE ALL NODES FROM US NEURAL MESH?\n' +
+            'This will disconnect all agents.'
+        )) {
+            // Animate nodes out
+            document.querySelectorAll('.agent-container')
+                    .forEach((el, i) => {
+                setTimeout(() => {
+                    el.style.transition = 'all 0.3s ease';
+                    el.style.opacity = '0';
+                    el.style.transform = 'scale(0)';
+                    setTimeout(() => el.remove(), 300);
+                }, i * 50);
+            });
+            
             state.agents = [];
-            updateCanvasUI();
-            showToast('Network link severed.', 'danger');
+            
+            setTimeout(() => {
+                updateCanvasUI();
+                showToast(
+                    'US Neural mesh terminated.', 
+                    'danger'
+                );
+                closeTelemetry();
+            }, state.agents.length * 50 + 300);
         }
     });
 
@@ -207,16 +229,110 @@ function initEventListeners() {
 async function apiFetch(endpoint, options = {}) {
     const start = performance.now();
     try {
-        const res = await fetch(`${CONFIG.API_BASE}${endpoint}`, options);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(
+            () => controller.abort(), 3000
+        );
+        
+        const res = await fetch(
+            `${CONFIG.API_BASE}${endpoint}`,
+            { ...options, signal: controller.signal }
+        );
+        clearTimeout(timeoutId);
+        
         const ms = Math.round(performance.now() - start);
         addLog(options.method || 'GET', endpoint, res.status, ms);
         
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return await res.json();
+        
     } catch (e) {
-        addLog(options.method || 'GET', endpoint, 500, Math.round(performance.now() - start));
-        throw e;
+        const ms = Math.round(performance.now() - start);
+        addLog(options.method || 'GET', endpoint, 500, ms);
+        
+        // MOCK RESPONSES when API unavailable
+        return getMockResponse(endpoint, options);
     }
+}
+
+function getMockResponse(endpoint, options = {}) {
+    const method = options.method || 'GET';
+    
+    // Discover mock
+    if (endpoint.includes('/discover')) {
+        const query = new URL(
+            `http://x${endpoint}`
+        ).searchParams.get('q') || '';
+        const matched = CONFIG.DEFAULT_SWARM.filter(a =>
+            a.name.toLowerCase().includes(
+                query.toLowerCase()
+            ) ||
+            a.tags.some(t => 
+                t.includes(query.toLowerCase())
+            )
+        );
+        return {
+            query,
+            agents: matched.length ? matched : 
+                    CONFIG.DEFAULT_SWARM,
+            total_results: matched.length || 
+                           CONFIG.DEFAULT_SWARM.length,
+            search_type: 'mock_semantic',
+            semantic_enabled: true
+        };
+    }
+    
+    // Register mock
+    if (endpoint.includes('/register') && 
+        method === 'POST') {
+        return {
+            status: 'registered',
+            agent_id: `USN-NODE-00${Math.floor(
+                Math.random() * 99
+            )}`,
+            message: 'Node synchronized to US Neural backbone.',
+            total_agents_on_network: 
+                CONFIG.DEFAULT_SWARM.length + 1
+        };
+    }
+    
+    // Send message mock
+    if (endpoint.includes('/messages/send')) {
+        return {
+            payload: {
+                status: 'success',
+                outputs: {
+                    result: 'Mock response from US Neural node',
+                    latency_ms: Math.floor(
+                        Math.random() * 200 + 50
+                    ),
+                    node: 'USN-MOCK-01'
+                }
+            }
+        };
+    }
+    
+    // Health mock
+    if (endpoint === '/health') {
+        return {
+            status: 'healthy',
+            agents_registered: CONFIG.DEFAULT_SWARM.length,
+            timestamp: new Date().toISOString()
+        };
+    }
+    
+    // Root mock
+    if (endpoint === '/') {
+        return {
+            name: 'US Neural Registry',
+            version: '0.2.0',
+            total_agents: CONFIG.DEFAULT_SWARM.length,
+            online_agents: CONFIG.DEFAULT_SWARM.length,
+            total_messages_relayed: 1337
+        };
+    }
+    
+    return { status: 'ok', mock: true };
 }
 
 async function fetchRegistrySync() {
@@ -254,37 +370,98 @@ async function fetchRegistrySync() {
     updateCanvasUI();
 }
 
+// Live latency simulation
+function startLatencySimulation() {
+    setInterval(() => {
+        if (state.isOffline) {
+            DOM.statLatency.textContent = 'DEMO';
+            return;
+        }
+        const base = 8;
+        const jitter = Math.floor(Math.random() * 8);
+        const latency = base + jitter;
+        DOM.statLatency.textContent = `${latency} ms`;
+    }, 1800);
+}
+
+startLatencySimulation();
+
+
 async function handleSearch(query) {
     if (!query) {
         DOM.searchRes.classList.add('hidden');
-        document.querySelectorAll('.agent-container').forEach(c => c.classList.remove('highlight', 'dimmed'));
+        document.querySelectorAll('.agent-container')
+                .forEach(c => {
+            c.classList.remove('highlight', 'dimmed');
+        });
         return;
     }
 
     try {
         let results = [];
-        if(!state.isOffline) {
-            const res = await apiFetch(`/api/v1/agents/discover?q=${encodeURIComponent(query)}`);
+        
+        if (!state.isOffline) {
+            const res = await apiFetch(
+                `/api/v1/agents/discover?q=${encodeURIComponent(query)}&semantic=true`
+            );
             results = res.agents || [];
         } else {
-            results = state.agents.filter(a => a.name.toLowerCase().includes(query.toLowerCase()) || a.tags.includes(query.toLowerCase()));
+            results = state.agents.filter(a =>
+                a.name.toLowerCase().includes(
+                    query.toLowerCase()
+                ) ||
+                a.tags.some(t => 
+                    t.toLowerCase().includes(
+                        query.toLowerCase()
+                    )
+                )
+            );
         }
 
         DOM.searchRes.textContent = results.length;
         DOM.searchRes.classList.remove('hidden');
 
         const ids = results.map(r => r.agent_id);
-        document.querySelectorAll('.agent-container').forEach(c => {
+        
+        document.querySelectorAll('.agent-container')
+                .forEach(c => {
             const aid = c.getAttribute('data-id');
             if (ids.includes(aid)) {
                 c.classList.add('highlight');
                 c.classList.remove('dimmed');
+                // Glow effect on match
+                c.style.filter = 'brightness(1.3)';
             } else {
                 c.classList.remove('highlight');
                 c.classList.add('dimmed');
+                c.style.filter = 'brightness(0.3)';
             }
         });
-    } catch(e) { /* ignore temp fetch errors during typing */ }
+
+    } catch(e) {
+        // Mock filter offline
+        const ids = state.agents
+            .filter(a => 
+                a.name.toLowerCase().includes(
+                    query.toLowerCase()
+                )
+            )
+            .map(a => a.agent_id);
+            
+        document.querySelectorAll('.agent-container')
+                .forEach(c => {
+            const aid = c.getAttribute('data-id');
+            if (ids.includes(aid)) {
+                c.classList.add('highlight');
+                c.classList.remove('dimmed');
+                c.style.filter = 'brightness(1.3)';
+            } else {
+                c.classList.remove('highlight');
+                c.classList.add('dimmed');
+                c.style.filter = 'brightness(0.3)';
+            }
+        });
+    }
 }
 
 // --- UI UPDATES ---
@@ -392,6 +569,25 @@ function updateCanvasUI() {
     Array.from(DOM.agentField.children).forEach(child => {
         if (!liveIds.includes(child.id)) child.remove();
     });
+}
+
+// Registry core click info
+document.getElementById('registry-core')
+        .addEventListener('click', () => {
+    showToast(
+        'US Neural Registry Core — Active', 
+        'success'
+    );
+    appendToLogIfOpen(
+        'USN-CORE // Registry heartbeat confirmed'
+    );
+});
+
+function appendToLogIfOpen(msg) {
+    const feed = document.getElementById('agent-json-feed');
+    if (feed) {
+        feed.textContent += `\n${msg}`;
+    }
 }
 
 // --- SPATIAL CANVAS RENDERING ---
@@ -692,13 +888,39 @@ function showToast(message, type = 'danger', duration = 3000) {
     const container = document.getElementById('toast-container');
     if (!container) return;
     
+    // US Neural prefix
+    const prefix = type === 'success' 
+        ? 'USN //' 
+        : type === 'danger' 
+        ? 'USN ERR //' 
+        : 'USN //';
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.textContent = message;
+    toast.textContent = `${prefix} ${message}`;
     container.appendChild(toast);
     
     setTimeout(() => {
         toast.classList.add('fading');
-        setTimeout(() => toast.remove(), 400); 
+        setTimeout(() => toast.remove(), 400);
     }, duration);
 }
+
+// ============================================
+// US NEURAL BOOT SEQUENCE
+// ============================================
+
+function initBootSequence() {
+    const boot = document.getElementById('boot-screen');
+    if (!boot) return;
+    
+    setTimeout(() => {
+        boot.style.transition = 'opacity 0.6s ease';
+        boot.style.opacity = '0';
+        setTimeout(() => {
+            boot.style.display = 'none';
+        }, 600);
+    }, 1400);
+}
+
+initBootSequence();

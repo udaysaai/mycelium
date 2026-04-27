@@ -1129,3 +1129,201 @@ body.light-theme {
 .agent-container.dimmed {
     opacity: 0.2;
 }
+
+/* ============================================
+   US NEURAL BRAND SYSTEM
+   ============================================ */
+
+/* Logo */
+.logo-mark {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.logo-us {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 3px;
+}
+
+.logo-neural {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 3px;
+}
+
+.logo-divider {
+    color: rgba(255,255,255,0.2);
+    margin: 0 12px;
+    font-size: 1.2rem;
+}
+
+.logo-product {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.product-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #4ade80;
+}
+
+.product-version {
+    font-size: 0.55rem;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+}
+
+/* Watermark */
+.watermark {
+    position: fixed;
+    bottom: 24px;
+    right: 32px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.wm-company {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 3px;
+}
+
+.wm-divider {
+    color: rgba(255,255,255,0.2);
+    font-size: 0.6rem;
+}
+
+.wm-product {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 2px;
+}
+
+/* Background watermark */
+.spatial-canvas::before {
+    content: 'US NEURAL';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18vw;
+    font-weight: 900;
+    letter-spacing: 2vw;
+    color: rgba(255,255,255,0.015);
+    pointer-events: none;
+    z-index: 0;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* Boot Screen */
+.boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.boot-content {
+    text-align: center;
+}
+
+.boot-logo {
+    font-family: var(--font-mono);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 12px;
+    color: #fff;
+    margin-bottom: 8px;
+    animation: boot-fade 0.5s ease forwards;
+}
+
+.boot-sub {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 6px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 32px;
+}
+
+.boot-line {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: #4ade80;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: boot-fade 0.3s ease 0.4s forwards;
+}
+
+.boot-bar {
+    width: 200px;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.boot-progress {
+    height: 100%;
+    background: #4ade80;
+    width: 0%;
+    animation: boot-load 0.8s ease 0.3s forwards;
+}
+
+@keyframes boot-fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes boot-load {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* Registry Core Label */
+.registry-core::after {
+    content: 'US NEURAL';
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.45rem;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.3);
+    white-space: nowrap;
+}
+
+/* Latency live animation */
+@keyframes stat-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+#stat-latency {
+    animation: stat-pulse 2s ease infinite;
+}
+
+/* Kill All Fix */
+#cmd-kill-all:hover {
+    background: rgba(224, 67, 67, 0.15);
+    color: var(--danger-red);
+}
