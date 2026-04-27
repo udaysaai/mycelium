@@ -2,7 +2,7 @@
 🍄 Mycelium — The Networking Protocol for AI Agents
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Uday"
 __protocol_version__ = "0.1.0"
 

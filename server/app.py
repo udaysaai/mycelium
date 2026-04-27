@@ -9,7 +9,6 @@ Run with:
     # or
     uvicorn server.app:app --reload
 """
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -18,6 +17,19 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+# Semantic Search Engine
+from mycelium.discovery.semantic import SemanticSearchEngine
+
+# Initialize semantic engine
+try:
+    semantic_engine = SemanticSearchEngine()
+    SEMANTIC_ENABLED = True
+    print("✅ Semantic search enabled (ChromaDB)")
+except Exception as e:
+    semantic_engine = None
+    SEMANTIC_ENABLED = False
+    print(f"⚠️ Semantic search disabled: {e}")
 
 app = FastAPI(
     title="🍄 Mycelium Registry",
@@ -86,17 +98,27 @@ class MessageRequest(BaseModel):
 async def register_agent(agent: RegisterRequest):
     """Register a new agent on the Mycelium network."""
     agent_data = agent.model_dump()
-    agent_data["registered_at"] = datetime.now(timezone.utc).isoformat()
-    agent_data["last_seen"] = datetime.now(timezone.utc).isoformat()
+    agent_data["registered_at"] = datetime.now(
+        timezone.utc
+    ).isoformat()
+    agent_data["last_seen"] = datetime.now(
+        timezone.utc
+    ).isoformat()
     agent_data["status"] = "online"
 
     agents_db[agent.agent_id] = agent_data
 
+    # 🧠 Index in semantic engine
+    if SEMANTIC_ENABLED and semantic_engine:
+        semantic_engine.index_agent(agent_data)
+        print(f"🧠 Indexed: {agent.name}")
+
     return {
         "status": "registered",
         "agent_id": agent.agent_id,
-        "message": f"Agent '{agent.name}' successfully registered on Mycelium! 🍄",
+        "message": f"Agent '{agent.name}' registered! 🍄",
         "total_agents_on_network": len(agents_db),
+        "semantic_indexed": SEMANTIC_ENABLED,
     }
 
 
@@ -104,12 +126,22 @@ async def register_agent(agent: RegisterRequest):
 async def deregister_agent(agent_id: str):
     """Remove an agent from the network."""
     if agent_id not in agents_db:
-        raise HTTPException(status_code=404, detail="Agent not found")
+        raise HTTPException(
+            status_code=404, 
+            detail="Agent not found"
+        )
 
     name = agents_db[agent_id]["name"]
     del agents_db[agent_id]
 
-    return {"status": "deregistered", "message": f"Agent '{name}' removed from network."}
+    # 🧠 Remove from semantic index
+    if SEMANTIC_ENABLED and semantic_engine:
+        semantic_engine.remove_agent(agent_id)
+
+    return {
+        "status": "deregistered",
+        "message": f"Agent '{name}' removed."
+    }
 
 
 # ============================================================
@@ -139,17 +171,83 @@ async def list_agents(
     }
 
 
-@app.get("/api/v1/agents/discover")          # ← PEHLE YEH
+@app.get("/api/v1/agents/discover")
 async def discover_agents(
     q: str = Query(..., description="Search query"),
     capability: Optional[str] = Query(default=None),
     tags: Optional[str] = Query(default=None),
     min_trust: float = Query(default=0.0),
     limit: int = Query(default=10, le=50),
+    semantic: bool = Query(
+        default=True,
+        description="Use semantic search"
+    ),
 ):
     """
-    Discover agents by natural language query, capability, or tags.
+    Discover agents by natural language query.
+    
+    v0.2.0: Now uses semantic vector search!
+    
+    Examples:
+        ?q=I need weather data
+        ?q=translate to hindi  
+        ?q=crypto price converter
+        ?q=tell me about a topic
     """
+
+    # ============================================
+    # SEMANTIC SEARCH (v0.2.0)
+    # ============================================
+    if semantic and SEMANTIC_ENABLED and semantic_engine:
+        
+        # Get semantic matches
+        semantic_matches = semantic_engine.search(
+            query=q,
+            limit=limit,
+            min_trust=min_trust,
+        )
+
+        # Fetch full agent data for matched IDs
+        results = []
+        for match in semantic_matches:
+            agent_id = match["agent_id"]
+            if agent_id in agents_db:
+                agent_data = agents_db[agent_id]
+                
+                # Apply capability filter if given
+                if capability:
+                    caps = agent_data.get("capabilities", [])
+                    cap_names = [
+                        c.get("name", "") for c in caps
+                    ]
+                    if capability not in cap_names:
+                        continue
+                
+                # Apply tag filter if given
+                if tags:
+                    tag_list = tags.split(",")
+                    agent_tags = agent_data.get("tags", [])
+                    if not any(
+                        t in agent_tags for t in tag_list
+                    ):
+                        continue
+
+                # Add similarity score to response
+                agent_data["_similarity_score"] = \
+                    match["similarity_score"]
+                results.append(agent_data)
+
+        return {
+            "query": q,
+            "search_type": "semantic_v2",
+            "agents": results[:limit],
+            "total_results": len(results),
+            "semantic_enabled": True,
+        }
+
+    # ============================================
+    # KEYWORD FALLBACK (v0.1.1)
+    # ============================================
     results = []
     query_lower = q.lower()
     tag_list = tags.split(",") if tags else []
@@ -158,7 +256,9 @@ async def discover_agents(
         score = 0.0
 
         name_lower = agent_data.get("name", "").lower()
-        desc_lower = agent_data.get("description", "").lower()
+        desc_lower = agent_data.get(
+            "description", ""
+        ).lower()
 
         for word in query_lower.split():
             if word in name_lower:
@@ -171,7 +271,8 @@ async def discover_agents(
             cap_name = cap.get("name", "").lower()
             cap_desc = cap.get("description", "").lower()
 
-            if capability and capability.lower() == cap_name:
+            if capability and \
+               capability.lower() == cap_name:
                 score += 5.0
 
             for word in query_lower.split():
@@ -180,7 +281,9 @@ async def discover_agents(
                 if word in cap_desc:
                     score += 1.0
 
-        agent_tags = [t.lower() for t in agent_data.get("tags", [])]
+        agent_tags = [
+            t.lower() for t in agent_data.get("tags", [])
+        ]
         for word in query_lower.split():
             if word in agent_tags:
                 score += 2.0
@@ -203,8 +306,10 @@ async def discover_agents(
 
     return {
         "query": q,
+        "search_type": "keyword_v1",
         "agents": agents,
         "total_results": len(agents),
+        "semantic_enabled": False,
     }
 
 

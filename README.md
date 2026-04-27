@@ -1,32 +1,29 @@
 <div align="center">
 
-# 🍄 Mycelium
+# 🍄 Mycelium Agents
 
-### The Networking Protocol for AI Agents
+### Watch 3 AI agents collaborate live — no glue code, no orchestration
 
-*Discover. Communicate. Collaborate.*
+**[▶ See Live Demo](https://mycelium-agents.netlify.app)** • 
+**[Try it now](#-quick-start)**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Protocol](https://img.shields.io/badge/protocol-v0.1.0-green.svg)]()
-[![Dashboard](https://img.shields.io/badge/Dashboard-Live-brightgreen)](https://mycelium-agents.netlify.app)
-[![PyPI](https://img.shields.io/badge/PyPI-mycelium--agents-blue)](https://pypi.org/project/mycelium-agents/)
+```bash
+pip install mycelium-agents
 
-[Quick Start](#-quick-start) • [Dashboard](#-spatial-dashboard) • [Documentation](#-documentation) • [Examples](#-examples) • [Contributing](#-contributing)
+Bitcoin price → INR conversion → Hindi translation.
+3 agents. 3 live APIs. 1.1 seconds. Zero orchestration code.
+Stars
+PyPI
+Dashboard
 
----
-
-*Like mycelium networks connect trees in a forest, this protocol connects AI agents across the internet.*
-
-**[🎨 Live Dashboard →](https://mycelium-agents.netlify.app)**
-
-</div>
+</div> ```
 
 ---
 
 ## The Problem
 
 AI agents are everywhere. But they're all **isolated**.
+
 
 ```
 Your Coding Agent ──── cannot talk to ──── Research Agent
