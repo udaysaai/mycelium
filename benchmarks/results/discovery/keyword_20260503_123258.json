@@ -1,0 +1,54 @@
+{
+  "benchmark": "discovery_keyword_v1",
+  "agents": 1000,
+  "queries": 1000,
+  "top1_accuracy": 0.522,
+  "top3_recall": 0.602,
+  "latency_ms": {
+    "avg": 4.44,
+    "min": 2.529,
+    "max": 14.973
+  },
+  "domains": {
+    "weather": {
+      "count": 123,
+      "top1_accuracy": 0.1626,
+      "top3_recall": 0.1626
+    },
+    "legal": {
+      "count": 110,
+      "top1_accuracy": 0.7818,
+      "top3_recall": 0.7818
+    },
+    "support": {
+      "count": 130,
+      "top1_accuracy": 0.4154,
+      "top3_recall": 0.4154
+    },
+    "knowledge": {
+      "count": 114,
+      "top1_accuracy": 0.5789,
+      "top3_recall": 0.5789
+    },
+    "translation": {
+      "count": 143,
+      "top1_accuracy": 0.7902,
+      "top3_recall": 1.0
+    },
+    "hiring": {
+      "count": 127,
+      "top1_accuracy": 1.0,
+      "top3_recall": 1.0
+    },
+    "medical": {
+      "count": 122,
+      "top1_accuracy": 0.459,
+      "top3_recall": 0.6557
+    },
+    "finance": {
+      "count": 131,
+      "top1_accuracy": 0.0,
+      "top3_recall": 0.1985
+    }
+  }
+}

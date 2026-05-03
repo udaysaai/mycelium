@@ -1,0 +1,36 @@
+{
+  "total_queries": 1000,
+  "top_k": 5,
+  "keyword": {
+    "top1_accuracy": 0.193,
+    "top3_recall": 0.217,
+    "top5_recall": 0.217,
+    "mrr": 0.201,
+    "avg_latency_ms": 2.53,
+    "p50_latency_ms": 2.4,
+    "p95_latency_ms": 3.56
+  },
+  "semantic": {
+    "top1_accuracy": 0.0,
+    "top3_recall": 0.0,
+    "top5_recall": 0.0,
+    "mrr": 0.0,
+    "avg_latency_ms": 9.86,
+    "p50_latency_ms": 9.49,
+    "p95_latency_ms": 12.22
+  },
+  "improvement": {
+    "top1_accuracy": -0.193,
+    "top3_recall": -0.217,
+    "mrr": -0.201,
+    "latency_cost_ms": 7.33
+  },
+  "metadata": {
+    "timestamp": "20260503_191259",
+    "model": "all-MiniLM-L6-v2",
+    "dataset": "synthetic_v1",
+    "agents_count": 1000,
+    "queries_count": 1000,
+    "mycelium_version": "0.2.0"
+  }
+}
