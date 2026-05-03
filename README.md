@@ -111,6 +111,19 @@ Powered by **ChromaDB** + **sentence-transformers**. Runs locally. No API key ne
 
 ---
 
+## 📊 Benchmark Results
+
+| Method | Top-1 Accuracy | Top-3 Recall | Avg Latency |
+|--------|---------------|--------------|-------------|
+| Keyword Search | 60.3% | 70.2% | 2.4ms |
+| **Semantic Search** | **94.2%** | **94.2%** | **9.4ms** |
+
+**Semantic search is 34% more accurate** at finding 
+the right agent for any natural language query.
+
+→ [Full benchmark report](benchmarks/results/)
+→ [Reproduce it yourself](benchmarks/scripts/)
+
 ## 🎨 Spatial Dashboard
 
 A visual control center for your Mycelium network. Built with vanilla JS and glassmorphism design.
