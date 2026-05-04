@@ -1,0 +1,116 @@
+{
+  "benchmark": "load_v1",
+  "timestamp": "20260504_153505",
+  "registry_url": "http://localhost:8000",
+  "agents_registered": 200,
+  "mycelium_version": "0.2.0",
+  "scenarios": [
+    {
+      "scenario": "light",
+      "users": 10,
+      "duration_sec": 30,
+      "total_requests": 125,
+      "successful": 125,
+      "failed": 0,
+      "error_rate": 0.0,
+      "rps": 3.89,
+      "latency": {
+        "avg_ms": 2498.43,
+        "p50_ms": 2513.21,
+        "p90_ms": 2722.33,
+        "p95_ms": 2751.3,
+        "p99_ms": 2814.16,
+        "min_ms": 2171.4,
+        "max_ms": 2885.72
+      },
+      "operations": {
+        "list": {
+          "count": 36,
+          "avg_ms": 2475.37
+        },
+        "discover": {
+          "count": 46,
+          "avg_ms": 2525.18
+        },
+        "health": {
+          "count": 43,
+          "avg_ms": 2489.11
+        }
+      },
+      "errors_sample": []
+    },
+    {
+      "scenario": "medium",
+      "users": 50,
+      "duration_sec": 30,
+      "total_requests": 400,
+      "successful": 400,
+      "failed": 0,
+      "error_rate": 0.0,
+      "rps": 12.06,
+      "latency": {
+        "avg_ms": 3871.52,
+        "p50_ms": 3863.39,
+        "p90_ms": 4477.53,
+        "p95_ms": 4746.43,
+        "p99_ms": 5452.77,
+        "min_ms": 2363.17,
+        "max_ms": 5500.31
+      },
+      "operations": {
+        "list": {
+          "count": 135,
+          "avg_ms": 3816.34
+        },
+        "health": {
+          "count": 140,
+          "avg_ms": 3846.87
+        },
+        "discover": {
+          "count": 125,
+          "avg_ms": 3958.7
+        }
+      },
+      "errors_sample": []
+    },
+    {
+      "scenario": "heavy",
+      "users": 100,
+      "duration_sec": 30,
+      "total_requests": 431,
+      "successful": 431,
+      "failed": 0,
+      "error_rate": 0.0,
+      "rps": 11.54,
+      "latency": {
+        "avg_ms": 7301.79,
+        "p50_ms": 8129.1,
+        "p90_ms": 9372.45,
+        "p95_ms": 9991.14,
+        "p99_ms": 10956.13,
+        "min_ms": 2531.75,
+        "max_ms": 10989.95
+      },
+      "operations": {
+        "discover": {
+          "count": 140,
+          "avg_ms": 7517.53
+        },
+        "list": {
+          "count": 147,
+          "avg_ms": 7124.75
+        },
+        "health": {
+          "count": 144,
+          "avg_ms": 7272.77
+        }
+      },
+      "errors_sample": []
+    }
+  ],
+  "summary": {
+    "max_rps": 12.06,
+    "best_p95": 2751.3,
+    "max_concurrent_users": 100
+  }
+}
