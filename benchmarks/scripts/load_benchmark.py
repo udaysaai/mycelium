@@ -129,65 +129,70 @@ def worker(
     errors: list,
     lock: threading.Lock
 ):
-    """Single worker — sends requests for duration seconds."""
+    """Single worker with persistent connection."""
     end_time = time.time() + duration_sec
     local_results = []
     local_errors = []
 
-    while time.time() < end_time:
-        query = random.choice(SAMPLE_QUERIES)
+    # Persistent client — connection pool
+    with httpx.Client(
+        base_url=REGISTRY_URL,
+        timeout=10.0,
+        limits=httpx.Limits(
+            max_keepalive_connections=5,
+            max_connections=10
+        )
+    ) as client:
 
-        # Random operation
-        op = random.choice(["discover", "list", "health"])
+        while time.time() < end_time:
+            query = random.choice(SAMPLE_QUERIES)
+            op = random.choice(["discover", "list", "health"])
 
-        try:
-            t0 = time.perf_counter()
+            try:
+                t0 = time.perf_counter()
 
-            if op == "discover":
-                r = httpx.get(
-                    f"{REGISTRY_URL}/api/v1/agents/discover",
-                    params={"q": query, "limit": 5},
-                    timeout=10
-                )
-            elif op == "list":
-                r = httpx.get(
-                    f"{REGISTRY_URL}/api/v1/agents",
-                    params={"limit": 20},
-                    timeout=10
-                )
-            else:
-                r = httpx.get(
-                    f"{REGISTRY_URL}/health",
-                    timeout=10
-                )
+                if op == "discover":
+                    r = client.get(
+                        "/api/v1/agents/discover",
+                        params={"q": query, "limit": 5}
+                    )
+                elif op == "list":
+                    r = client.get(
+                        "/api/v1/agents",
+                        params={"limit": 20}
+                    )
+                else:
+                    r = client.get("/health")
 
-            latency_ms = (time.perf_counter() - t0) * 1000
+                latency_ms = (
+                    time.perf_counter() - t0
+                ) * 1000
 
-            if r.status_code == 200:
-                local_results.append({
-                    "op": op,
-                    "latency_ms": latency_ms,
-                    "status": r.status_code
-                })
-            else:
+                if r.status_code == 200:
+                    local_results.append({
+                        "op": op,
+                        "latency_ms": latency_ms,
+                        "status": r.status_code
+                    })
+                else:
+                    local_errors.append({
+                        "op": op,
+                        "status": r.status_code,
+                        "error": r.text[:100]
+                    })
+
+            except httpx.TimeoutException:
                 local_errors.append({
                     "op": op,
-                    "status": r.status_code,
-                    "error": r.text[:100]
+                    "status": 0,
+                    "error": "timeout"
                 })
-
-        except httpx.TimeoutException:
-            local_errors.append({
-                "op": op,
-                "status": 0,
-                "error": "timeout"
-            })
-        except Exception as e:
-            local_errors.append({
-                "op": op,
-                "status": 0,
-                "error": str(e)[:100]
-            })
+            except Exception as e:
+                local_errors.append({
+                    "op": op,
+                    "status": 0,
+                    "error": str(e)[:100]
+                })
 
     with lock:
         results.extend(local_results)

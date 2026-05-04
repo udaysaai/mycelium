@@ -1,16 +1,9 @@
 """
-🍄 Mycelium Registry Server
-
-The central hub where agents register, discover each other,
-and route messages.
-
-Run with:
-    python -m server.app
-    # or
-    uvicorn server.app:app --reload
+🍄 Mycelium Registry Server v0.2.0
 """
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -18,26 +11,55 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# Semantic Search Engine
-from mycelium.discovery.semantic import SemanticSearchEngine
+# ============================================================
+# GLOBALS
+# ============================================================
 
-# Initialize semantic engine
-try:
-    semantic_engine = SemanticSearchEngine()
-    SEMANTIC_ENABLED = True
-    print("✅ Semantic search enabled (ChromaDB)")
-except Exception as e:
-    semantic_engine = None
-    SEMANTIC_ENABLED = False
-    print(f"⚠️ Semantic search disabled: {e}")
+agents_db: dict[str, dict] = {}
+messages_queue: list[dict] = []
+semantic_engine = None
+SEMANTIC_ENABLED = False
+
+
+# ============================================================
+# STARTUP / SHUTDOWN
+# ============================================================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize heavy resources ONCE at startup."""
+    global semantic_engine, SEMANTIC_ENABLED
+
+    print("\n🍄 Starting Mycelium Registry Server...\n")
+
+    try:
+        from mycelium.discovery.semantic import (
+            SemanticSearchEngine
+        )
+        semantic_engine = SemanticSearchEngine()
+        SEMANTIC_ENABLED = True
+        print("✅ Semantic search enabled (ChromaDB)")
+    except Exception as e:
+        semantic_engine = None
+        SEMANTIC_ENABLED = False
+        print(f"⚠️ Semantic search disabled: {e}")
+
+    yield
+
+    print("👋 Registry shutting down.")
+
+
+# ============================================================
+# APP
+# ============================================================
 
 app = FastAPI(
     title="🍄 Mycelium Registry",
-    description="The networking protocol for AI agents. "
-                "Register, discover, and communicate.",
-    version="0.1.0",
+    description="The networking protocol for AI agents.",
+    version="0.2.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
