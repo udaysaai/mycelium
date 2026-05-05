@@ -126,8 +126,8 @@ the right agent for any natural language query.
 
 ### 🎬 Watch the Demo
 
-[https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)](https://github.com/user-attachments/assets/c3e64d1f-b320-4df8-a4f7-598a77142fc5
-](https://github.com/user-attachments/assets/c3e64d1f-b320-4df8-a4f7-598a77142fc5)
+https://github.com/user-attachments/assets/2a228337-80f5-479d-8b03-02597ccdc5ef
+
 ## 🎨 Spatial Dashboard
 
 A visual control center for your Mycelium network. Built with vanilla JS and glassmorphism design.
