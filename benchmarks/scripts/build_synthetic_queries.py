@@ -70,7 +70,7 @@ QUERY_BANK = {
 
 def main():
     queries = []
-    total = 1000
+    total = 5000
 
     domain_names = list(QUERY_BANK.keys())
 
@@ -84,7 +84,7 @@ def main():
             "expected_domain": domain,
         })
 
-    save_json("benchmarks/data/synthetic/queries_1k.json", queries)
+    save_json("benchmarks/data/synthetic/queries_5k.json", queries)
     print(f"✅ Saved {len(queries)} synthetic queries")
 
 
