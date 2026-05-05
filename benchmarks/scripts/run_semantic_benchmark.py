@@ -35,7 +35,7 @@ def timestamp():
 # ============================================================
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-AGENTS_FILE = "benchmarks/data/synthetic/agent_cards_10k.json"
+AGENTS_FILE = "benchmarks/data/synthetic/agent_cards_100k.json"
 QUERIES_FILE = "benchmarks/data/synthetic/queries_5k.json"
 RESULTS_DIR = "benchmarks/results/discovery"
 MODEL_NAME = "all-MiniLM-L6-v2"

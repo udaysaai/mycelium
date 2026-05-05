@@ -93,7 +93,7 @@ def make_agent(agent_num, domain, capability):
 
 
 def main():
-    total = 10000
+    total = 100000
     agents = []
     i = 1
 
@@ -105,7 +105,7 @@ def main():
         agents.append(make_agent(i, domain, capability))
         i += 1
 
-    save_json("benchmarks/data/synthetic/agent_cards_10k.json", agents)
+    save_json("benchmarks/data/synthetic/agent_cards_100k.json", agents)
     print(f"✅ Saved {len(agents)} synthetic agents")
 
 

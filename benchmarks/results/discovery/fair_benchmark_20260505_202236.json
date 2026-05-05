@@ -1,0 +1,43 @@
+{
+  "benchmark": "fair_v1",
+  "timestamp": "20260505_202236",
+  "agents_file": "benchmarks/data/synthetic/agent_cards_100k.json",
+  "queries_file": "benchmarks/data/synthetic/queries_5k.json",
+  "top_k": 5,
+  "naive_keyword": {
+    "evaluated_queries": 5000,
+    "skipped_queries": 0,
+    "top1_accuracy": 0.756,
+    "top3_recall": 0.83,
+    "top5_recall": 0.83,
+    "mrr": 0.7851,
+    "avg_latency_ms": 136.35,
+    "p50_latency_ms": 134.72,
+    "p95_latency_ms": 181.18,
+    "p99_latency_ms": 204.44
+  },
+  "bm25_lexical": {
+    "evaluated_queries": 5000,
+    "skipped_queries": 0,
+    "top1_accuracy": 0.834,
+    "top3_recall": 0.834,
+    "top5_recall": 0.8844,
+    "mrr": 0.8466,
+    "avg_latency_ms": 71.59,
+    "p50_latency_ms": 68.61,
+    "p95_latency_ms": 108.06,
+    "p99_latency_ms": 117.01
+  },
+  "semantic": {
+    "evaluated_queries": 5000,
+    "skipped_queries": 0,
+    "top1_accuracy": 0.874,
+    "top3_recall": 0.874,
+    "top5_recall": 0.874,
+    "mrr": 0.874,
+    "avg_latency_ms": 14.51,
+    "p50_latency_ms": 11.27,
+    "p95_latency_ms": 25.58,
+    "p99_latency_ms": 95.93
+  }
+}
