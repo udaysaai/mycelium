@@ -124,6 +124,10 @@ the right agent for any natural language query.
 → [Full benchmark report](benchmarks/results/)
 → [Reproduce it yourself](benchmarks/scripts/)
 
+### 🎬 Watch the Demo
+
+[[![Mycelium Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)](https://github.com/user-attachments/assets/c3e64d1f-b320-4df8-a4f7-598a77142fc5)
+
 ## 🎨 Spatial Dashboard
 
 A visual control center for your Mycelium network. Built with vanilla JS and glassmorphism design.
