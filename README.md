@@ -9,6 +9,7 @@
 [![Stars](https://img.shields.io/github/stars/udaysaai/mycelium?style=social)](https://github.com/udaysaai/mycelium)
 [![PyPI](https://img.shields.io/badge/PyPI-mycelium--agents-blue)](https://pypi.org/project/mycelium-agents/)
 [![Dashboard](https://img.shields.io/badge/Dashboard-Live-brightgreen)](https://mycelium-agents.netlify.app)
+[![CodeQL](https://github.com/udaysaai/mycelium/actions/workflows/codeql.yml/badge.svg)](https://github.com/udaysaai/mycelium/actions/workflows/codeql.yml)
 
 *Bitcoin price → INR conversion → Hindi translation.*
 *3 agents. 3 live APIs. 1.1 seconds. Zero orchestration code.*
