@@ -2,7 +2,7 @@
 
 // --- CONFIGURATION ---
 const CONFIG = {
-    API_BASE: import.meta.env.VITE_API_BASE || 'http://localhost:8000',
+    API_BASE: import.meta.env.VITE_API_BASE || 'https://usaai-us-neural-registry.hf.space',
     POLL_INTERVAL: 5000,
     DEFAULT_SWARM: [
         {
@@ -176,7 +176,7 @@ function initEventListeners() {
             'TERMINATE ALL NODES FROM US NEURAL MESH?\n' +
             'This action will disconnect all active agents.'
         )) return;
-        
+
         // Animate each node out with stagger
         const nodes = document.querySelectorAll('.agent-container');
         nodes.forEach((el, i) => {
@@ -186,7 +186,7 @@ function initEventListeners() {
                 el.style.transform = 'scale(0) rotate(180deg)';
             }, i * 80);
         });
-        
+
         // Clear state after animation
         setTimeout(() => {
             state.agents = [];
@@ -206,10 +206,10 @@ function initEventListeners() {
     // Close buttons
     document.querySelectorAll('.btn-close').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if(btn.id === 'btn-close-telemetry') closeTelemetry();
-            if(btn.classList.contains('modal-deploy-close')) DOM.modalDeploy.classList.add('hidden');
-            if(btn.classList.contains('modal-chain-close')) DOM.modalChain.classList.add('hidden');
-            if(btn.classList.contains('log-close')) DOM.panelLogs.classList.add('hidden');
+            if (btn.id === 'btn-close-telemetry') closeTelemetry();
+            if (btn.classList.contains('modal-deploy-close')) DOM.modalDeploy.classList.add('hidden');
+            if (btn.classList.contains('modal-chain-close')) DOM.modalChain.classList.add('hidden');
+            if (btn.classList.contains('log-close')) DOM.panelLogs.classList.add('hidden');
         });
     });
 
@@ -237,12 +237,11 @@ function initEventListeners() {
 async function apiFetch(endpoint, options = {}) {
     const start = performance.now();
     const method = options.method || 'GET';
-    
+
     // Try real API first with 2 second timeout
     try {
-        const controller = new AbortController();
         const timeoutId = setTimeout(
-            () => controller.abort(), 2000
+            () => controller.abort(), 8000
         );
         const res = await fetch(
             `${CONFIG.API_BASE}${endpoint}`,
@@ -250,13 +249,13 @@ async function apiFetch(endpoint, options = {}) {
         );
         clearTimeout(timeoutId);
         const ms = Math.round(performance.now() - start);
-        
+
         if (res.ok) {
             addLog(method, endpoint, 200, ms);
             return await res.json();
         }
         throw new Error('API failed');
-        
+
     } catch (e) {
         // API unreachable — return mock success
         const ms = Math.round(performance.now() - start);
@@ -267,7 +266,7 @@ async function apiFetch(endpoint, options = {}) {
 
 function buildMockResponse(endpoint, options = {}) {
     const method = options.method || 'GET';
-    
+
     // Root endpoint
     if (endpoint === '/') {
         return {
@@ -279,7 +278,7 @@ function buildMockResponse(endpoint, options = {}) {
             total_messages_relayed: 1337 + Math.floor(Math.random() * 100)
         };
     }
-    
+
     // Health check
     if (endpoint === '/health') {
         return {
@@ -288,24 +287,24 @@ function buildMockResponse(endpoint, options = {}) {
             timestamp: new Date().toISOString()
         };
     }
-    
+
     // Discover agents — semantic mock
     if (endpoint.includes('/discover')) {
         const params = new URLSearchParams(
             endpoint.split('?')[1] || ''
         );
         const q = (params.get('q') || '').toLowerCase();
-        
+
         const matched = state.agents.filter(a => {
             const nameMatch = a.name.toLowerCase().includes(q);
             const tagMatch = (a.tags || []).some(t => t.toLowerCase().includes(q));
-            const capMatch = (a.capabilities || []).some(c => 
+            const capMatch = (a.capabilities || []).some(c =>
                 c.name.toLowerCase().includes(q) ||
                 (c.description || '').toLowerCase().includes(q)
             );
             return nameMatch || tagMatch || capMatch;
         });
-        
+
         return {
             query: q,
             search_type: 'usn_semantic_v2',
@@ -314,10 +313,10 @@ function buildMockResponse(endpoint, options = {}) {
             semantic_enabled: true
         };
     }
-    
+
     // List agents
-    if (endpoint.includes('/api/v1/agents') && 
-        method === 'GET' && 
+    if (endpoint.includes('/api/v1/agents') &&
+        method === 'GET' &&
         !endpoint.includes('/discover')) {
         return {
             agents: state.agents,
@@ -325,14 +324,14 @@ function buildMockResponse(endpoint, options = {}) {
             network_size: state.agents.length
         };
     }
-    
+
     // Register new agent
     if (endpoint.includes('/register') && method === 'POST') {
         let body = {};
-        try { body = JSON.parse(options.body || '{}'); } catch(e) {}
-        
+        try { body = JSON.parse(options.body || '{}'); } catch (e) { }
+
         const newId = `USN-NODE-0${Math.floor(Math.random() * 99).toString().padStart(2, '0')}`;
-        
+
         const newAgent = {
             agent_id: newId,
             name: body.name || 'NewNode',
@@ -344,11 +343,11 @@ function buildMockResponse(endpoint, options = {}) {
             trust_score: 0,
             endpoint: body.endpoint || null
         };
-        
+
         // Add to state so it appears on canvas
         state.agents.push(newAgent);
         updateCanvasUI();
-        
+
         return {
             status: 'registered',
             agent_id: newId,
@@ -357,18 +356,18 @@ function buildMockResponse(endpoint, options = {}) {
             semantic_indexed: true
         };
     }
-    
+
     // Send message to agent
     if (endpoint.includes('/messages/send') && method === 'POST') {
         let body = {};
-        try { body = JSON.parse(options.body || '{}'); } catch(e) {}
-        
+        try { body = JSON.parse(options.body || '{}'); } catch (e) { }
+
         const capability = body.payload?.capability || 'unknown';
         const inputs = body.payload?.inputs || {};
-        
+
         // Generate realistic mock outputs
         const mockOutputs = generateMockOutput(capability, inputs);
-        
+
         return {
             envelope: {
                 message_id: `msg_${Date.now()}`,
@@ -387,17 +386,17 @@ function buildMockResponse(endpoint, options = {}) {
             }
         };
     }
-    
+
     // Delete agent
     if (method === 'DELETE') {
         const agentId = endpoint.split('/').pop();
         state.agents = state.agents.filter(a => a.agent_id !== agentId);
-        return { 
-            status: 'deregistered', 
-            message: 'Node removed from US Neural mesh.' 
+        return {
+            status: 'deregistered',
+            message: 'Node removed from US Neural mesh.'
         };
     }
-    
+
     return { status: 'ok', mock: true };
 }
 
@@ -413,7 +412,7 @@ function generateMockOutput(capability, inputs) {
             is_real_data: true
         };
     }
-    
+
     // Crypto
     if (capability.includes('crypto') || capability.includes('price')) {
         return {
@@ -426,7 +425,7 @@ function generateMockOutput(capability, inputs) {
             is_real_data: true
         };
     }
-    
+
     // Translation
     if (capability.includes('translate')) {
         const translations = {
@@ -446,7 +445,7 @@ function generateMockOutput(capability, inputs) {
             is_real_data: true
         };
     }
-    
+
     // Currency
     if (capability.includes('currency') || capability.includes('convert')) {
         const rate = 83.5;
@@ -462,7 +461,7 @@ function generateMockOutput(capability, inputs) {
             is_real_data: true
         };
     }
-    
+
     // Wikipedia
     if (capability.includes('wiki') || capability.includes('summary')) {
         return {
@@ -474,7 +473,7 @@ function generateMockOutput(capability, inputs) {
             is_real_data: true
         };
     }
-    
+
     // Generic
     return {
         result: 'Task completed successfully',
@@ -487,7 +486,7 @@ function generateMockOutput(capability, inputs) {
 async function fetchRegistrySync() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
 
         const response = await fetch(
             `${CONFIG.API_BASE}/api/v1/agents`,
@@ -540,15 +539,15 @@ async function handleSearch(query) {
     if (!query) {
         DOM.searchRes.classList.add('hidden');
         document.querySelectorAll('.agent-container')
-                .forEach(c => {
-            c.classList.remove('highlight', 'dimmed');
-        });
+            .forEach(c => {
+                c.classList.remove('highlight', 'dimmed');
+            });
         return;
     }
 
     try {
         let results = [];
-        
+
         if (!state.isOffline) {
             const res = await apiFetch(
                 `/api/v1/agents/discover?q=${encodeURIComponent(query)}&semantic=true`
@@ -559,7 +558,7 @@ async function handleSearch(query) {
                 a.name.toLowerCase().includes(
                     query.toLowerCase()
                 ) ||
-                a.tags.some(t => 
+                a.tags.some(t =>
                     t.toLowerCase().includes(
                         query.toLowerCase()
                     )
@@ -572,45 +571,45 @@ async function handleSearch(query) {
         incrementMessages();
 
         const ids = results.map(r => r.agent_id);
-        
-        document.querySelectorAll('.agent-container')
-                .forEach(c => {
-            const aid = c.getAttribute('data-id');
-            if (ids.includes(aid)) {
-                c.classList.add('highlight');
-                c.classList.remove('dimmed');
-                // Glow effect on match
-                c.style.filter = 'brightness(1.3)';
-            } else {
-                c.classList.remove('highlight');
-                c.classList.add('dimmed');
-                c.style.filter = 'brightness(0.3)';
-            }
-        });
 
-    } catch(e) {
+        document.querySelectorAll('.agent-container')
+            .forEach(c => {
+                const aid = c.getAttribute('data-id');
+                if (ids.includes(aid)) {
+                    c.classList.add('highlight');
+                    c.classList.remove('dimmed');
+                    // Glow effect on match
+                    c.style.filter = 'brightness(1.3)';
+                } else {
+                    c.classList.remove('highlight');
+                    c.classList.add('dimmed');
+                    c.style.filter = 'brightness(0.3)';
+                }
+            });
+
+    } catch (e) {
         // Mock filter offline
         const ids = state.agents
-            .filter(a => 
+            .filter(a =>
                 a.name.toLowerCase().includes(
                     query.toLowerCase()
                 )
             )
             .map(a => a.agent_id);
-            
+
         document.querySelectorAll('.agent-container')
-                .forEach(c => {
-            const aid = c.getAttribute('data-id');
-            if (ids.includes(aid)) {
-                c.classList.add('highlight');
-                c.classList.remove('dimmed');
-                c.style.filter = 'brightness(1.3)';
-            } else {
-                c.classList.remove('highlight');
-                c.classList.add('dimmed');
-                c.style.filter = 'brightness(0.3)';
-            }
-        });
+            .forEach(c => {
+                const aid = c.getAttribute('data-id');
+                if (ids.includes(aid)) {
+                    c.classList.add('highlight');
+                    c.classList.remove('dimmed');
+                    c.style.filter = 'brightness(1.3)';
+                } else {
+                    c.classList.remove('highlight');
+                    c.classList.add('dimmed');
+                    c.style.filter = 'brightness(0.3)';
+                }
+            });
     }
 }
 
@@ -622,7 +621,7 @@ function updateStats(newStats) {
     } else {
         animateCount(DOM.statLatency, state.stats.latency, newStats.latency, ' ms');
     }
-    
+
     animateCount(DOM.statAgents, state.stats.total, newStats.total, '');
     animateCount(DOM.statOnline, state.stats.online, newStats.online, '');
     animateCount(DOM.statMessages, state.stats.messages, newStats.messages, '');
@@ -649,9 +648,9 @@ function triggerCorePulse() {
 }
 
 function getStatusColorClass(status) {
-    if(status === 'online') return 'dot-online';
-    if(status === 'busy') return 'dot-busy';
-    if(status === 'offline') return 'dot-offline';
+    if (status === 'online') return 'dot-online';
+    if (status === 'busy') return 'dot-busy';
+    if (status === 'offline') return 'dot-offline';
     return 'dot-unknown';
 }
 
@@ -675,10 +674,10 @@ function updateCanvasUI() {
             el.className = 'agent-container';
             el.id = `node-${agent.agent_id}`;
             el.setAttribute('data-id', agent.agent_id);
-            
+
             const radius = 250 + (i % 3) * 60;
             const angle = (i / state.agents.length) * Math.PI * 2;
-            
+
             el.style.left = `${cx + Math.cos(angle) * radius - 60}px`;
             el.style.top = `${cy + Math.sin(angle) * radius - 25}px`;
 
@@ -688,7 +687,7 @@ function updateCanvasUI() {
 
             // Click Telemetry
             el.addEventListener('click', (e) => {
-                if(e.button === 0) openTelemetry(agent.agent_id);
+                if (e.button === 0) openTelemetry(agent.agent_id);
             });
 
             // Context Menu
@@ -723,15 +722,15 @@ function updateCanvasUI() {
 
 // Registry core click info
 document.getElementById('registry-core')
-        .addEventListener('click', () => {
-    showToast(
-        'US Neural Registry Core — Active', 
-        'success'
-    );
-    appendToLogIfOpen(
-        'USN-CORE // Registry heartbeat confirmed'
-    );
-});
+    .addEventListener('click', () => {
+        showToast(
+            'US Neural Registry Core — Active',
+            'success'
+        );
+        appendToLogIfOpen(
+            'USN-CORE // Registry heartbeat confirmed'
+        );
+    });
 
 function appendToLogIfOpen(msg) {
     const feed = document.getElementById('agent-json-feed');
@@ -752,7 +751,7 @@ function renderSpatialFrame() {
         const rect = container.getBoundingClientRect();
         const px = rect.left + rect.width / 2;
         const py = rect.top + rect.height / 2; // centers of pills
-        
+
         const isOffline = container.querySelector('.dot-offline') !== null;
         const isSelected = container.querySelector('.agent-pill.active') !== null;
         const aid = container.getAttribute('data-id');
@@ -778,7 +777,7 @@ function renderSpatialFrame() {
             // Bezier point calculation
             const tx = Math.pow(1 - p, 2) * cx + 2 * (1 - p) * p * cx + Math.pow(p, 2) * px;
             const ty = Math.pow(1 - p, 2) * cy + 2 * (1 - p) * p * py + Math.pow(p, 2) * py;
-            
+
             DOM.ctx.beginPath();
             DOM.ctx.arc(tx, ty, 3, 0, Math.PI * 2);
             DOM.ctx.fillStyle = flow.success ? 'var(--success-green)' : 'var(--danger-red)';
@@ -804,7 +803,7 @@ function showTooltip(e, agent) {
         <div class="tooltip-row"><span class="tooltip-label">Trust</span><span>${'★'.repeat(Math.round(agent.trust_score || 0))}</span></div>
     `;
     DOM.tooltip.classList.remove('hidden');
-    
+
     // Position near pill
     const rect = e.target.getBoundingClientRect();
     DOM.tooltip.style.left = `${rect.left + rect.width / 2}px`;
@@ -833,7 +832,7 @@ function showContextMenu(e, agent) {
 async function openTelemetry(agentId) {
     state.selectedAgentId = agentId;
     updateCanvasUI();
-    
+
     const agent = state.agents.find(a => a.agent_id === agentId);
     if (!agent) return;
 
@@ -846,13 +845,13 @@ async function openTelemetry(agentId) {
     };
     DOM.sheetStatusTxt.textContent = statusMap[agent.status] || 'SYNAPSE ACTIVE';
     DOM.sheetStatusDot.className = `status-dot ${getStatusColorClass(agent.status)}`;
-    
+
     // Format as USN brand ID
-    const brandId = agent.agent_id.startsWith('USN') 
-        ? agent.agent_id 
+    const brandId = agent.agent_id.startsWith('USN')
+        ? agent.agent_id
         : `USN-${agent.name.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 6)}-${agent.agent_id.substring(agent.agent_id.length - 4).toUpperCase()}`;
     DOM.sheetId.textContent = brandId;
-    
+
     // Parse port
     if (agent.endpoint) {
         try { const url = new URL(agent.endpoint); DOM.sheetPort.textContent = url.port || '80'; }
@@ -885,17 +884,17 @@ function closeTelemetry() {
 
 async function pingSelectedAgent() {
     const agent = state.agents.find(a => a.agent_id === state.selectedAgentId);
-    if(!agent) return;
+    if (!agent) return;
     triggerPing(agent);
 }
 
 async function triggerPing(agent) {
-    DOM.sheetJson.textContent = 
+    DOM.sheetJson.textContent =
         `[USN PING] Sending signal to ${agent.name}...\n` +
         `[ROUTE]    US Neural Mesh → ${agent.agent_id}\n`;
-    
+
     const start = performance.now();
-    
+
     // Try real ping first
     if (agent.endpoint) {
         try {
@@ -910,26 +909,26 @@ async function triggerPing(agent) {
                     timestamp: performance.now(),
                     success: true
                 };
-                DOM.sheetJson.textContent += 
+                DOM.sheetJson.textContent +=
                     `\n[SUCCESS] RTT: ${ms}ms\n\n` +
                     JSON.stringify(data, null, 2);
                 showToast(`${agent.name} — ${ms}ms`, 'success');
                 incrementMessages();
                 return;
             }
-        } catch(e) { /* Fall through to mock */ }
+        } catch (e) { /* Fall through to mock */ }
     }
-    
+
     // Mock success ping
     const mockMs = Math.floor(Math.random() * 15 + 5);
     await new Promise(r => setTimeout(r, mockMs + 50));
-    
+
     state.activeConnections[agent.agent_id] = {
         timestamp: performance.now(),
         success: true
     };
-    
-    DOM.sheetJson.textContent += 
+
+    DOM.sheetJson.textContent +=
         `\n[SUCCESS] RTT: ${mockMs}ms\n\n` +
         JSON.stringify({
             status: 'healthy',
@@ -941,24 +940,24 @@ async function triggerPing(agent) {
             node: `USN-${agent.name.substring(0, 4).toUpperCase()}-01`,
             us_neural_backbone: 'CONNECTED'
         }, null, 2);
-    
+
     showToast(`USN // ${agent.name} — ${mockMs}ms`, 'success');
     incrementMessages();
 }
 
 async function sendPayloadToSelected() {
     const agent = state.agents.find(a => a.agent_id === state.selectedAgentId);
-    if(!agent) return;
+    if (!agent) return;
 
     let payloadInputs = {};
     try {
         const val = DOM.sheetPayload.value;
-        if(val.startsWith('{')) payloadInputs = JSON.parse(val);
+        if (val.startsWith('{')) payloadInputs = JSON.parse(val);
         else if (val.includes('=')) {
             const [k, v] = val.split('=');
             payloadInputs[k.trim()] = v.trim();
         } else if (val) payloadInputs['query'] = val;
-    } catch(e) { showToast('Invalid JSON input format', 'danger'); return; }
+    } catch (e) { showToast('Invalid JSON input format', 'danger'); return; }
 
     const message = {
         envelope: {
@@ -975,7 +974,7 @@ async function sendPayloadToSelected() {
     };
 
     DOM.sheetJson.textContent = `[SENDING PAYLOAD]\n${JSON.stringify(message, null, 2)}\n\n[AWAITING RESPONSE...]`;
-    
+
     try {
         const res = await apiFetch(`/api/v1/messages/send`, {
             method: 'POST',
@@ -992,16 +991,16 @@ async function sendPayloadToSelected() {
 }
 
 async function removeSelectedAgent() {
-    if(!state.selectedAgentId) return;
+    if (!state.selectedAgentId) return;
     triggerRemove(state.selectedAgentId);
 }
 
 async function triggerRemove(agentId) {
-    if(!confirm('Are you sure you want to completely deregister this node?')) return;
+    if (!confirm('Are you sure you want to completely deregister this node?')) return;
     try {
         await apiFetch(`/api/v1/agents/${agentId}`, { method: 'DELETE' });
         showToast('Agent deregistered successfully.', 'success');
-        if(state.selectedAgentId === agentId) closeTelemetry();
+        if (state.selectedAgentId === agentId) closeTelemetry();
         fetchRegistrySync();
     } catch (e) {
         showToast('Removal Failed: Ensure API is running.', 'danger');
@@ -1014,9 +1013,9 @@ async function deployNewAgent() {
     const port = document.getElementById('deploy-port').value;
     const capsStr = document.getElementById('deploy-caps').value;
 
-    if(!name || !port) { showToast('Name and Port are required.', 'danger'); return; }
+    if (!name || !port) { showToast('Name and Port are required.', 'danger'); return; }
 
-    const caps = capsStr.split(',').map(c => ({ name: c.trim(), description: "Dynamically added via Dash" })).filter(c=>c.name);
+    const caps = capsStr.split(',').map(c => ({ name: c.trim(), description: "Dynamically added via Dash" })).filter(c => c.name);
 
     const payload = {
         name, description: desc, endpoint: `http://localhost:${port}`, capabilities: caps, tags: ['custom', 'deployed']
@@ -1043,11 +1042,11 @@ async function deployNewAgent() {
 // --- LOGGING ---
 function addLog(method, endpoint, status, ms) {
     const now = new Date();
-    const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-    
+    const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
     let colorClass = 'log-200';
-    if(status >= 400 && status < 500) colorClass = 'log-400';
-    if(status >= 500) colorClass = 'log-500';
+    if (status >= 400 && status < 500) colorClass = 'log-400';
+    if (status >= 500) colorClass = 'log-500';
 
     const logHTML = `
         <div class="log-entry">
@@ -1058,18 +1057,18 @@ function addLog(method, endpoint, status, ms) {
             <span class="log-ms">${ms}ms</span>
         </div>
     `;
-    
+
     state.globalLogs.push(logHTML);
-    if(state.globalLogs.length > 100) state.globalLogs.shift();
-    
+    if (state.globalLogs.length > 100) state.globalLogs.shift();
+
     updateLogsUI();
 }
 
 function updateLogsUI() {
     const filter = document.getElementById('log-filter').value.toLowerCase();
-    
+
     const html = state.globalLogs.filter(log => {
-        if(!filter) return true;
+        if (!filter) return true;
         return log.toLowerCase().includes(filter);
     }).join('');
 
@@ -1083,19 +1082,19 @@ document.getElementById('log-filter').addEventListener('input', updateLogsUI);
 function showToast(message, type = 'danger', duration = 3000) {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    
+
     // US Neural prefix
-    const prefix = type === 'success' 
-        ? 'USN //' 
-        : type === 'danger' 
-        ? 'USN ERR //' 
-        : 'USN //';
-    
+    const prefix = type === 'success'
+        ? 'USN //'
+        : type === 'danger'
+            ? 'USN ERR //'
+            : 'USN //';
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = `${prefix} ${message}`;
     container.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.classList.add('fading');
         setTimeout(() => toast.remove(), 400);
@@ -1109,7 +1108,7 @@ function showToast(message, type = 'danger', duration = 3000) {
 function initBootSequence() {
     const boot = document.getElementById('boot-screen');
     if (!boot) return;
-    
+
     setTimeout(() => {
         boot.style.transition = 'opacity 0.6s ease';
         boot.style.opacity = '0';
