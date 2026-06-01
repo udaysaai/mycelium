@@ -1,0 +1,3 @@
+mycelium-agents==0.2.0
+fastapi
+uvicorn

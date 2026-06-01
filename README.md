@@ -17,6 +17,12 @@
 </div>
 
 ---
+## 📢 Latest Updates
+- **May 2024**: ✅ v0.2.0 Live! Added Semantic Discovery & 100k agent benchmark.
+- **May 2024**: 🚀 CrewAI Integration Bridge released. [See Example](link)
+- **Next Up**: 🛠️ Authentication Layer & JS SDK (Working on it...)
+
+---
 
 ## The Problem
 
