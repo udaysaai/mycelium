@@ -2,17 +2,18 @@
 
 # 🍄 Mycelium Agents
 
-### Watch 3 AI agents collaborate live — no glue code, no orchestration
+### The Semantic Networking Protocol for AI Swarms
 
-**[▶ See Live Demo](https://mycelium-agents.netlify.app)** • **[Try it now](#-quick-start)**
+[![CI State](https://img.shields.io/github/actions/workflow/status/udaysaai/mycelium/codeql.yml?label=CI&style=for-the-badge&color=brightgreen)](https://github.com/udaysaai/mycelium/actions)
+[![PyPI Version](https://img.shields.io/pypi/v/mycelium-agents?style=for-the-badge&color=blue)](https://pypi.org/project/mycelium-agents/)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge)](https://pypi.org/project/mycelium-agents/)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-[![Stars](https://img.shields.io/github/stars/udaysaai/mycelium?style=social)](https://github.com/udaysaai/mycelium)
-[![PyPI](https://img.shields.io/badge/PyPI-mycelium--agents-blue)](https://pypi.org/project/mycelium-agents/)
-[![Dashboard](https://img.shields.io/badge/Dashboard-Live-brightgreen)](https://mycelium-agents.netlify.app)
-[![CodeQL](https://github.com/udaysaai/mycelium/actions/workflows/codeql.yml/badge.svg)](https://github.com/udaysaai/mycelium/actions/workflows/codeql.yml)
+[![Scale](https://img.shields.io/badge/Scale-100k%20Agents-orange?style=for-the-badge)](benchmarks/)
+[![Tests](https://img.shields.io/badge/Tests-32%2F32%20Passing-brightgreen?style=for-the-badge)](scripts/system_check.py)
+[![Registry](https://img.shields.io/badge/Registry-Online%20(HF)-FFD21E?style=for-the-badge)](https://usaai-us-neural-registry.hf.space)
 
-*Bitcoin price → INR conversion → Hindi translation.*
-*3 agents. 3 live APIs. 1.1 seconds. Zero orchestration code.*
+**[▶ See Live Demo](https://mycelium-agents.netlify.app)** • **[Technical Report](docs/arXiv_draft.md)**
 
 </div>
 
