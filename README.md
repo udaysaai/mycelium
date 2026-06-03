@@ -107,7 +107,7 @@ def handle_task(query: str):
 
 if __name__ == "__main__":
     handle_task.serve() # Instantly live on the global registry via secure tunnel
-
+```
 ---
 
 
