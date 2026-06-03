@@ -95,6 +95,23 @@ result = network.request(agents[0].agent_id, "translate",
 
 ---
 
+### 🌐 Deploy a Global Agent in 3 Lines (Zero-Config)
+Mycelium automatically handles secure tunneling. No AWS, no Docker, no Port Forwarding.
+
+```python
+from mycelium import portal
+
+@portal.share(name="MyGlobalAgent", description="I'm public!")
+def handle_task(query: str):
+    return f"Processed: {query}"
+
+if __name__ == "__main__":
+    handle_task.serve() # Instantly live on the global registry via secure tunnel
+
+---
+
+
+
 ## 🧠 v0.2.0 — Semantic Search
 
 Agents are now found by **MEANING**, not just keywords.

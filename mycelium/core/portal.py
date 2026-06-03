@@ -1,16 +1,17 @@
 import uvicorn
 from fastapi import FastAPI, Request
 import requests
-import threading
+from pyngrok import ngrok
 import time
+import threading
 
 class Portal:
     def __init__(self, registry_url="https://usaai-us-neural-registry.hf.space"):
         self.registry_url = registry_url
         self.app = FastAPI()
 
-    def share(self, name: str, description: str, port: int = 8000):
-        """The magic decorator to turn a function into a Global Agent."""
+    def share(self, name: str, description: str, port: int = 8000, use_tunnel: bool = True):
+        """Turn a function into a Global Agent with an automatic tunnel."""
         def decorator(func):
             capability_name = func.__name__
             
@@ -18,37 +19,41 @@ class Portal:
             async def wrapper(request: Request):
                 data = await request.json()
                 inputs = data.get("payload", {}).get("inputs", {})
-                # Execute the original function
                 result = func(**inputs)
-                return {
-                    "status": "success",
-                    "outputs": result
-                }
+                return {"status": "success", "outputs": result}
 
-            # Start the background registration
             def start_portal():
-                print(f"🍄 [Portal] Spinning up Agent: {name}...")
-                # In a real scenario, we'd use a tunnel here. 
-                # For now, we register the local endpoint.
+                public_url = f"http://localhost:{port}"
+                
+                if use_tunnel:
+                    print(f"🌐 [Portal] Opening secure tunnel...")
+                    try:
+                        # Create ngrok tunnel
+                        tunnel = ngrok.connect(port)
+                        public_url = tunnel.public_url
+                        print(f"🚀 [Portal] Public URL: {public_url}")
+                    except Exception as e:
+                        print(f"⚠️ [Portal] Tunnel failed, falling back to localhost. Error: {e}")
+
+                # Registering with Public URL
                 agent_data = {
                     "agent_id": f"agent_{int(time.time())}",
                     "name": name,
                     "description": description,
                     "capabilities": [{"name": capability_name, "description": description}],
-                    "endpoint": f"http://localhost:{port}" # Ideally a public URL
+                    "endpoint": public_url # Global URL registered!
                 }
+                
                 try:
                     requests.post(f"{self.registry_url}/api/v1/agents/register", json=agent_data)
-                    print(f"✅ [Portal] {name} is now LIVE on Mycelium Global.")
+                    print(f"✅ [Portal] '{name}' is GLOBAL. Discovery ID: {agent_data['agent_id']}")
                 except:
-                    print("❌ [Portal] Failed to reach registry.")
+                    print("❌ [Portal] Registry unreachable.")
                 
                 uvicorn.run(self.app, host="0.0.0.0", port=port)
 
-            # Return a callable that starts the portal
             func.serve = start_portal
             return func
         return decorator
 
-# Global instance for easy use
 portal = Portal()
