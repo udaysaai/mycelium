@@ -216,6 +216,8 @@ Open: **http://localhost:5173**
 
 ---
 
+---
+
 ## 🛡️ Security & Reliability (OWASP ASI06 Compliance)
 
 As AI agents move towards autonomy, security risks like **OWASP ASI06 (AI Agent Over-Permissioning)** become critical. Mycelium is engineered to mitigate these risks at the protocol level.
