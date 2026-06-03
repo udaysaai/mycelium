@@ -198,11 +198,11 @@ Open: **http://localhost:5173**
 ## 🏗️ Architecture
 
 ```text
-┌─────────────────────────────────────────────────────┐
-│                  MYCELIUM NETWORK                   │
-│                                                     │
+┌────────────────────────────────────────────────────┐
+│                  MYCELIUM NETWORK                  │
+│                                                    │
 │  ┌──────────┐    ┌──────────────┐    ┌──────────┐  │
-│  │ Agent A  │───▶│   REGISTRY   │◀───│ Agent B  │  │
+│  │ Agent A  │───▶│   REGISTRY   │◀───│ Agent B │  │
 │  │ (Travel) │    │              │    │ (Payment)│  │
 │  └────┬─────┘    │ • Discovery  │    └────┬─────┘  │
 │       │          │ • Semantic   │         │        │
@@ -211,9 +211,26 @@ Open: **http://localhost:5173**
 │       │          └──────────────┘         │        │
 │       │                                   │        │
 │       └────── DIRECT COMMUNICATION ───────┘        │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
+│                                                    │
+└────────────────────────────────────────────────────┘
+
+---
+
+## 🛡️ Security & Reliability (OWASP ASI06 Compliance)
+
+As AI agents move towards autonomy, security risks like **OWASP ASI06 (AI Agent Over-Permissioning)** become critical. Mycelium is engineered to mitigate these risks at the protocol level.
+
+### 🔒 Mitigating AI Agent Over-Permissioning
+Mycelium enforces a **Least Privilege Routing (LPR)** model:
+- **Granular Capability Mapping**: Agents only register specific atomic capabilities (e.g., `get_weather`), preventing broad system access.
+- **Discovery Sandboxing**: The registry only reveals agents that exactly match the semantic intent, preventing unauthorized "agent-to-agent" scanning.
+- **Encapsulated Payloads**: All communication is strictly validated via Pydantic schemas, ensuring no malicious execution code is injected into the routing layer.
+
+### 🛠️ Hardened Infrastructure
+- **Dependency Guard**: Continuous scanning via CodeQL to prevent supply chain vulnerabilities.
+- **Payload Integrity**: (Alpha) Support for signed message envelopes to ensure data hasn't been tampered with during relay.
+- **Rate Limiting**: Built-in protection against "Agent Storms" where recursive agent calls could lead to Denial of Service (DoS).
+
 
 ---
 
