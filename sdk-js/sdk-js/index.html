@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mycelium JS Test</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; padding: 40px; }
+        #results { background: #1e293b; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .agent { color: #38bdf8; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🍄 Mycelium JS Explorer</h1>
+    <input type="text" id="query" placeholder="Search capability (e.g. weather)..." style="padding: 10px; width: 300px;">
+    <button onclick="search()" style="padding: 10px 20px; cursor: pointer;">Discover</button>
+
+    <div id="results">Enter a query to find agents on the global network...</div>
+
+    <script src="mycelium.js"></script>
+    <script>
+        const client = new MyceliumClient();
+        
+        async function search() {
+            const q = document.getElementById('query').value;
+            const resDiv = document.getElementById('results');
+            resDiv.innerHTML = "Searching global swarm...";
+            
+            const agents = await client.discover(q);
+            
+            if (agents.length === 0) {
+                resDiv.innerHTML = "❌ No agents found.";
+                return;
+            }
+
+            resDiv.innerHTML = agents.map(a => `
+                <div style="margin-bottom: 15px;">
+                    <span class="agent">${a.name}</span> (${a.agent_id})<br>
+                    <small style="color: #94a3b8;">Caps: ${JSON.stringify(a.capabilities.map(c => c.name || c))}</small>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
