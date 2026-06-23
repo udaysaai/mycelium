@@ -147,65 +147,50 @@ function initCanvas() {
 }
 
 // --- EVENT LISTENERS ---
+// --- EVENT LISTENERS (CLEAN & STABLE) ---
 function initEventListeners() {
-    // Theme Toggle
-    document.getElementById('theme-toggle').addEventListener('click', () => {
+    // 1. Theme Toggle
+    const themeBtn = document.getElementById('theme-toggle');
+    if(themeBtn) themeBtn.addEventListener('click', () => {
         document.body.classList.toggle('light-theme');
         state.theme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
     });
 
-    document.getElementById('btn-execute-chain').addEventListener('click', executeVisualChain);
-    // Search (Cmd+K)
+    // 2. Visual Chain Builder Bindings
+    const execBtn = document.getElementById('btn-execute-chain');
+    if(execBtn) execBtn.addEventListener('click', executeVisualChain);
+    
+    const s1 = document.getElementById('slot-1');
+    const s2 = document.getElementById('slot-2');
+    const s3 = document.getElementById('slot-3');
+    if(s1) s1.onclick = () => prepareSelection(1);
+    if(s2) s2.onclick = () => prepareSelection(2);
+    if(s3) s3.onclick = () => prepareSelection(3);
+
+    // 3. Search (Cmd+K)
     document.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
             e.preventDefault();
             DOM.searchInp.focus();
         }
     });
+    if(DOM.searchInp) DOM.searchInp.addEventListener('input', (e) => handleSearch(e.target.value));
 
-    DOM.searchInp.addEventListener('input', (e) => handleSearch(e.target.value));
+    // 4. Dock Actions
+    const cmdDeploy = document.getElementById('cmd-deploy');
+    const cmdChain = document.getElementById('cmd-chain');
+    const cmdLogs = document.getElementById('cmd-logs');
+    const cmdRestart = document.getElementById('cmd-restart');
 
-    // Dock
-    document.getElementById('cmd-deploy').addEventListener('click', () => DOM.modalDeploy.classList.remove('hidden'));
-    document.getElementById('cmd-chain').addEventListener('click', () => DOM.modalChain.classList.remove('hidden'));
-    document.getElementById('cmd-logs').addEventListener('click', () => DOM.panelLogs.classList.remove('hidden'));
-    document.getElementById('cmd-restart').addEventListener('click', () => {
+    if(cmdDeploy) cmdDeploy.addEventListener('click', () => DOM.modalDeploy.classList.remove('hidden'));
+    if(cmdChain) cmdChain.addEventListener('click', () => DOM.modalChain.classList.remove('hidden'));
+    if(cmdLogs) cmdLogs.addEventListener('click', () => DOM.panelLogs.classList.remove('hidden'));
+    if(cmdRestart) cmdRestart.addEventListener('click', () => {
         showToast('Restarting network swarm...', 'success');
         fetchRegistrySync();
     });
-    document.getElementById('cmd-kill-all').addEventListener('click', () => {
-        if (!confirm(
-            'TERMINATE ALL NODES FROM US NEURAL MESH?\n' +
-            'This action will disconnect all active agents.'
-        )) return;
 
-        // Animate each node out with stagger
-        const nodes = document.querySelectorAll('.agent-container');
-        nodes.forEach((el, i) => {
-            setTimeout(() => {
-                el.style.transition = 'all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)';
-                el.style.opacity = '0';
-                el.style.transform = 'scale(0) rotate(180deg)';
-            }, i * 80);
-        });
-
-        // Clear state after animation
-        setTimeout(() => {
-            state.agents = [];
-            state.selectedAgentId = null;
-            DOM.agentField.innerHTML = '';
-            updateStats({
-                latency: state.stats.latency,
-                total: 0,
-                online: 0,
-                messages: state.stats.messages
-            });
-            closeTelemetry();
-            showToast('All nodes terminated from US Neural mesh.', 'danger');
-        }, nodes.length * 80 + 400);
-    });
-
-    // Close buttons
+    // 5. Close buttons logic
     document.querySelectorAll('.btn-close').forEach(btn => {
         btn.addEventListener('click', (e) => {
             if (btn.id === 'btn-close-telemetry') closeTelemetry();
@@ -215,23 +200,12 @@ function initEventListeners() {
         });
     });
 
-    // Context Menu hide
-    document.addEventListener('click', () => DOM.ctxMenu.classList.add('hidden'));
-
-    // Telemetry Actions
-    document.getElementById('btn-ping-agent').addEventListener('click', pingSelectedAgent);
-    document.getElementById('btn-send-payload').addEventListener('click', sendPayloadToSelected);
-    document.getElementById('btn-terminate-node').addEventListener('click', removeSelectedAgent);
-
-    // Deploy Submit
-    document.getElementById('btn-submit-deploy').addEventListener('click', deployNewAgent);
-
-    // Chain execution
-    document.getElementById('btn-execute-chain').addEventListener('click', () => {
-        showToast('Chain execution initiated...', 'success');
-        document.getElementById('chain-status').textContent = 'Running...';
-        setTimeout(() => document.getElementById('chain-status').textContent = '240ms - Success', 1500);
-    });
+    // 6. Node Actions
+    document.addEventListener('click', () => { if (DOM.ctxMenu) DOM.ctxMenu.classList.add('hidden'); });
+    if (document.getElementById('btn-ping-agent')) document.getElementById('btn-ping-agent').addEventListener('click', pingSelectedAgent);
+    if (document.getElementById('btn-send-payload')) document.getElementById('btn-send-payload').addEventListener('click', sendPayloadToSelected);
+    if (document.getElementById('btn-terminate-node')) document.getElementById('btn-terminate-node').addEventListener('click', removeSelectedAgent);
+    if (document.getElementById('btn-submit-deploy')) document.getElementById('btn-submit-deploy').addEventListener('click', deployNewAgent);
 }
 
 // --- API & DATA LAYER ---
@@ -242,9 +216,9 @@ async function apiFetch(endpoint, options = {}) {
 
     // Try real API first with 2 second timeout
     try {
-        const timeoutId = setTimeout(
-            () => controller.abort(), 8000
-        );
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const res = await fetch(
             `${CONFIG.API_BASE}${endpoint}`,
             { ...options, signal: controller.signal }
@@ -687,23 +661,24 @@ function updateCanvasUI() {
             el.addEventListener('mouseenter', (e) => showTooltip(e, agent));
             el.addEventListener('mouseleave', hideTooltip);
 
-            // Click Telemetry
+            
+             // Click Telemetry OR Chain Selection
             el.addEventListener('click', (e) => {
                 if (activeSelectingSlot) {
-                    // Agar selection mode ON hai
-                    const agent = state.agents.find(a => a.agent_id === el.getAttribute('data-id'));
+                    const agentId = el.getAttribute('data-id');
+                    const agent = state.agents.find(a => a.agent_id === agentId);
                     chainSlots[activeSelectingSlot] = agent;
                     
-                    // UI update karo slot mein
                     const slotEl = document.getElementById(`slot-${activeSelectingSlot}`);
-                    slotEl.querySelector('.slot-text').textContent = agent.name;
-                    slotEl.classList.add('filled');
+                    if(slotEl) {
+                        slotEl.querySelector('.slot-text').textContent = agent.name;
+                        slotEl.classList.add('filled');
+                    }
                     
-                    activeSelectingSlot = null; // Selection mode OFF
-                    DOM.modalChain.classList.remove('hidden'); // Modal wapas dikhao
+                    activeSelectingSlot = null;
+                    DOM.modalChain.classList.remove('hidden');
                     showToast("Agent linked to chain", "success");
                 } else {
-                    // Normal behavior: Telemetry kholo
                     openTelemetry(agent.agent_id);
                 }
             });
@@ -1119,48 +1094,46 @@ function showToast(message, type = 'danger', duration = 3000) {
     }, duration);
 }
 
-// Function 1: Slot select karne ki taiyari
+// ============================================
+// VISUAL CHAIN BUILDER LOGIC
+// ============================================
+// --- CHAIN BUILDER LOGIC ---
+
 function prepareSelection(slotId) {
     activeSelectingSlot = slotId;
-    DOM.modalChain.classList.add('hidden'); // Modal hide karo taaki user agent select kar sake
-    showToast(`Click an agent on the dashboard for Step ${slotId}`, "success");
+    if (DOM.modalChain) DOM.modalChain.classList.add('hidden'); 
+    showToast(`Click an agent for Step ${slotId}`, "success");
 }
 
-// Function 2: Execute Chain (Simulation + Canvas Particles)
 async function executeVisualChain() {
-    const payload = document.getElementById('chain-payload').value;
-    if (!chainSlots[1] || !payload) {
-        showToast("Minimum 1 agent and input required", "danger");
+    const payloadInput = document.getElementById('chain-payload');
+    const statusEl = document.getElementById('chain-status');
+    
+    if (!chainSlots[1] || !payloadInput || !payloadInput.value) {
+        showToast("Agent and input required", "danger");
         return;
     }
 
-    const statusEl = document.getElementById('chain-status');
     statusEl.textContent = "🚀 Chain Initiated...";
 
     for (let i = 1; i <= 3; i++) {
         if (!chainSlots[i]) break;
-        
         const agent = chainSlots[i];
-        statusEl.textContent = `📡 Step ${i}: Processing at ${agent.name}...`;
+        statusEl.textContent = `📡 Routing to ${agent.name}...`;
         
-        // Asli Magic: Canvas particle trigger karo
-        // Ye existing connection logic ko use karega
         state.activeConnections[agent.agent_id] = {
             timestamp: performance.now(),
             success: true
         };
-        
-        await new Promise(r => setTimeout(r, 1500)); // Delay for effect
+        await new Promise(r => setTimeout(r, 1500));
     }
     
-    statusEl.textContent = "✅ Chain Success (1120ms)";
-    showToast("Global Workflow Completed", "success");
+    statusEl.textContent = "✅ Chain Success";
+    showToast("Workflow Completed", "success");
     triggerCorePulse();
-}el.addEventListener
+}
 
-// ============================================
-// US NEURAL BOOT SEQUENCE
-// ============================================
+// --- BOOT SEQUENCE ---
 
 function initBootSequence() {
     const boot = document.getElementById('boot-screen');
@@ -1175,4 +1148,10 @@ function initBootSequence() {
     }, 1400);
 }
 
-initBootSequence();
+document.addEventListener('DOMContentLoaded', () => {
+    initCanvas();
+    initEventListeners();
+    fetchRegistrySync();
+    setInterval(fetchRegistrySync, CONFIG.POLL_INTERVAL);
+    initBootSequence();   // ✅ Yahan rakho
+});

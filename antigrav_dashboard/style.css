@@ -17,6 +17,7 @@
     --success-green: #34C759;
     --warning-yellow: #FFD60A;
     --neutral-gray: #8E8E93;
+    --accent-cyan: #00ffc8; 
     
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -1239,6 +1240,7 @@ body.light-theme {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* Added Smooth Fade */
 }
 
 .boot-content {
@@ -1368,3 +1370,24 @@ body.light-theme {
 
 .chain-footer { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
 #chain-payload { width: 100%; background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+/* Final Button Polish */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent-cyan);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--accent-cyan);
+}
+
+.btn-primary:active { transform: scale(0.98); }
