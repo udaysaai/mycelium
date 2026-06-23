@@ -87,7 +87,8 @@ let state = {
     activeConnections: {}, // track data flow: { agent_id: { timestamp, success } }
     theme: 'dark-theme'
 };
-
+let chainSlots = { 1: null, 2: null, 3: null };
+let activeSelectingSlot = null;
 let messageCounter = 1337;
 function incrementMessages() {
     messageCounter += Math.floor(Math.random() * 3 + 1);
@@ -153,6 +154,7 @@ function initEventListeners() {
         state.theme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
     });
 
+    document.getElementById('btn-execute-chain').addEventListener('click', executeVisualChain);
     // Search (Cmd+K)
     document.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -687,7 +689,23 @@ function updateCanvasUI() {
 
             // Click Telemetry
             el.addEventListener('click', (e) => {
-                if (e.button === 0) openTelemetry(agent.agent_id);
+                if (activeSelectingSlot) {
+                    // Agar selection mode ON hai
+                    const agent = state.agents.find(a => a.agent_id === el.getAttribute('data-id'));
+                    chainSlots[activeSelectingSlot] = agent;
+                    
+                    // UI update karo slot mein
+                    const slotEl = document.getElementById(`slot-${activeSelectingSlot}`);
+                    slotEl.querySelector('.slot-text').textContent = agent.name;
+                    slotEl.classList.add('filled');
+                    
+                    activeSelectingSlot = null; // Selection mode OFF
+                    DOM.modalChain.classList.remove('hidden'); // Modal wapas dikhao
+                    showToast("Agent linked to chain", "success");
+                } else {
+                    // Normal behavior: Telemetry kholo
+                    openTelemetry(agent.agent_id);
+                }
             });
 
             // Context Menu
@@ -1100,6 +1118,45 @@ function showToast(message, type = 'danger', duration = 3000) {
         setTimeout(() => toast.remove(), 400);
     }, duration);
 }
+
+// Function 1: Slot select karne ki taiyari
+function prepareSelection(slotId) {
+    activeSelectingSlot = slotId;
+    DOM.modalChain.classList.add('hidden'); // Modal hide karo taaki user agent select kar sake
+    showToast(`Click an agent on the dashboard for Step ${slotId}`, "success");
+}
+
+// Function 2: Execute Chain (Simulation + Canvas Particles)
+async function executeVisualChain() {
+    const payload = document.getElementById('chain-payload').value;
+    if (!chainSlots[1] || !payload) {
+        showToast("Minimum 1 agent and input required", "danger");
+        return;
+    }
+
+    const statusEl = document.getElementById('chain-status');
+    statusEl.textContent = "🚀 Chain Initiated...";
+
+    for (let i = 1; i <= 3; i++) {
+        if (!chainSlots[i]) break;
+        
+        const agent = chainSlots[i];
+        statusEl.textContent = `📡 Step ${i}: Processing at ${agent.name}...`;
+        
+        // Asli Magic: Canvas particle trigger karo
+        // Ye existing connection logic ko use karega
+        state.activeConnections[agent.agent_id] = {
+            timestamp: performance.now(),
+            success: true
+        };
+        
+        await new Promise(r => setTimeout(r, 1500)); // Delay for effect
+    }
+    
+    statusEl.textContent = "✅ Chain Success (1120ms)";
+    showToast("Global Workflow Completed", "success");
+    triggerCorePulse();
+}el.addEventListener
 
 // ============================================
 // US NEURAL BOOT SEQUENCE

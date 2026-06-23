@@ -246,39 +246,38 @@
         </div>
     </div>
 
-    <!-- CHAIN MODAL -->
-    <div id="modal-chain" class="modal-overlay hidden">
-        <div class="modal-box">
+    
+    <!-- Chain Builder Modal -->
+    <div id="modal-chain" class="modal hidden">
+        <div class="modal-content glass-panel">
             <div class="modal-header">
-                <h2>⛓ Chain Builder</h2>
+                <h2>⛓️ Visual Chain Builder</h2>
                 <button class="btn-close modal-chain-close">×</button>
             </div>
             <div class="modal-body">
-                <p class="modal-desc">
-                    Build a multi-agent chain. 
-                    Output of each step feeds into the next.
-                </p>
-                <div class="chain-steps">
-                    <div class="chain-step">
-                        <span class="step-num">1</span>
-                        <span class="step-name">CryptoTracker → get_crypto_price</span>
+                <p class="dim">Click "Select Step" and then click an agent orbiting the core.</p>
+                
+                <div class="chain-slots">
+                    <div class="slot" id="slot-1" onclick="prepareSelection(1)">
+                        <span class="slot-num">1</span>
+                        <div class="slot-text">Select Step 1</div>
                     </div>
-                    <div class="chain-arrow">↓</div>
-                    <div class="chain-step">
-                        <span class="step-num">2</span>
-                        <span class="step-name">CurrencyMaster → convert_currency</span>
+                    <div class="chain-link">↓</div>
+                    <div class="slot" id="slot-2" onclick="prepareSelection(2)">
+                        <span class="slot-num">2</span>
+                        <div class="slot-text">Select Step 2</div>
                     </div>
-                    <div class="chain-arrow">↓</div>
-                    <div class="chain-step">
-                        <span class="step-num">3</span>
-                        <span class="step-name">RealTranslator → translate_real</span>
+                    <div class="chain-link">↓</div>
+                    <div class="slot" id="slot-3" onclick="prepareSelection(3)">
+                        <span class="slot-num">3</span>
+                        <div class="slot-text">Select Step 3</div>
                     </div>
                 </div>
+
                 <div class="chain-footer">
-                    <span id="chain-status" class="chain-status">Ready</span>
-                    <button id="btn-execute-chain" class="action-btn primary">
-                        ▶ Execute Chain
-                    </button>
+                    <input type="text" id="chain-payload" placeholder="Initial Input (e.g. 'Bitcoin Price')">
+                    <button id="btn-execute-chain" class="btn-primary">🚀 Execute Swarm</button>
+                    <div id="chain-status" class="dim">Status: Ready</div>
                 </div>
             </div>
         </div>
@@ -316,5 +315,6 @@
     </div>
 
     <script type="module" src="main.js"></script>
+
 </body>
 </html>
