@@ -16,7 +16,22 @@
 **[▶ See Live Demo](https://mycelium-agents.netlify.app)** • **[Technical Report](docs/arXiv_draft.md)**
 
 </div>
+    
+**Stop hardcoding tool selection. Scale your AI product from 5 to 5,000 tools without rewriting your orchestration logic.**
 
+## 📖 The "Tool Routing" Bottleneck
+As AI products grow, they transition from single-prompt wrappers to complex multi-tool systems. Developers today rely on hardcoded `if/else` logic, expensive LLM-based routing, or keyword matching that breaks when a user's intent doesn't exactly match a function name.
+
+**Mycelium provides a drop-in semantic discovery layer.** It allows your AI system to dynamically find and route requests to the right internal tool or agent based on meaning, not just exact keywords.
+
+## 📊 Performance Moat (v0.3.0 Benchmark)
+We refuse to trade accuracy for speed. In our latest fair-benchmark against traditional Information Retrieval (IR) methods on a corpus of **100,000 agents**:
+
+*   **70.7% Family-Level Top-1 Accuracy** (A +30 percentage point advantage over the strongest lexical baseline, BM25).
+*   **<11ms Cold Discovery Latency** (Running 20x faster than BM25 on commodity hardware).
+*   **Zero-Cost Local Infrastructure** (Embedding runs locally via `all-MiniLM-L6-v2`; no OpenAI API bills for routing).
+
+*See the full reproduction steps and methodology in our [Benchmarks Ledger](./benchmarks/RESULTS.md).*
 ---
 ## 📢 Latest Updates
 - **May 2024**: ✅ v0.2.0 Live! Added Semantic Discovery & 100k agent benchmark.
