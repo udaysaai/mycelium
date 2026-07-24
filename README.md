@@ -16,7 +16,11 @@
 **[▶ See Live Demo](https://mycelium-agents.netlify.app)** • **[Technical Report](docs/arXiv_draft.md)**
 
 </div>
-    
+
+<div align="center">
+  <img src="docs/demo.gif" alt="Mycelium Semantic Routing Demo" width="800"/>
+</div>
+
 **Stop hardcoding tool selection. Scale your AI product from 5 to 5,000 tools without rewriting your orchestration logic.**
 
 ## 📖 The "Tool Routing" Bottleneck
