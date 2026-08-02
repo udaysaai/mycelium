@@ -4,8 +4,9 @@
  */
 
 export class MyceliumClient {
-    constructor(baseUrl = "http://127.0.0.1:8000/api/v1") {
+    constructor(baseUrl = "http://127.0.0.1:8000/api/v1", apiKey = null) {
         this.baseUrl = baseUrl;
+        this.apiKey = apiKey;
     }
 
     /**
@@ -13,9 +14,11 @@ export class MyceliumClient {
      */
     async registerTool(agentId, name, description, tags = []) {
         try {
+            const headers = { "Content-Type": "application/json" };
+            if (this.apiKey) headers["X-Mycelium-API-Key"] = this.apiKey;
             const response = await fetch(`${this.baseUrl}/agents/register`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: headers,
                 body: JSON.stringify({
                     agent_id: agentId,
                     name: name,
@@ -40,7 +43,10 @@ export class MyceliumClient {
             url.searchParams.append("semantic", "true");
             url.searchParams.append("limit", "1");
 
-            const response = await fetch(url);
+            const headers = {};
+            if (this.apiKey) headers["X-Mycelium-API-Key"] = this.apiKey;
+
+            const response = await fetch(url, { headers });
             const data = await response.json();
 
             if (data.agents && data.agents.length > 0) {

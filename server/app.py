@@ -7,7 +7,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
+from security.auth import verify_api_key
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -136,7 +137,7 @@ class MessageRequest(BaseModel):
 # ROUTES — REGISTRATION
 # ============================================================
 
-@app.post("/api/v1/agents/register")
+@app.post("/api/v1/agents/register", dependencies=[Depends(verify_api_key)])
 async def register_agent(agent: RegisterRequest):
     """Register a new agent on the Mycelium network."""
     agent_data = agent.model_dump()
@@ -167,7 +168,7 @@ async def register_agent(agent: RegisterRequest):
     }
 
 
-@app.delete("/api/v1/agents/{agent_id}")
+@app.delete("/api/v1/agents/{agent_id}", dependencies=[Depends(verify_api_key)])
 async def deregister_agent(agent_id: str):
     """Remove an agent from the network."""
     if agent_id not in agents_db:
@@ -217,7 +218,7 @@ async def list_agents(
     }
 
 
-@app.get("/api/v1/agents/discover")
+@app.get("/api/v1/agents/discover", dependencies=[Depends(verify_api_key)])
 async def discover_agents(
     q: str = Query(..., description="Search query"),
     capability: Optional[str] = Query(default=None),

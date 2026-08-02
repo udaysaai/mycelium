@@ -1,17 +1,20 @@
 """
-🔐 Security Layer — Agent authentication and message signing
-
-Every agent gets a keypair.
-Every message is signed.
-Nobody can impersonate another agent.
+🔐 Security Layer — Agent authentication, message signing, and Enterprise Access.
 """
 
+import os
 import hashlib
 import hmac
 import secrets
 import time
 from typing import Optional
 
+from fastapi import Security, HTTPException, status
+from fastapi.security.api_key import APIKeyHeader
+
+# ============================================================
+# 1. AGENT-TO-AGENT SECURITY (Message Signing)
+# ============================================================
 
 class AgentKeyPair:
     """
@@ -44,8 +47,7 @@ class AgentKeyPair:
         return signature
     
     @staticmethod
-    def verify_signature(payload: str, signature: str, 
-                         secret: str) -> bool:
+    def verify_signature(payload: str, signature: str, secret: str) -> bool:
         """Verify a message signature."""
         expected = hmac.new(
             secret.encode(),
@@ -54,16 +56,17 @@ class AgentKeyPair:
         ).hexdigest()
         return hmac.compare_digest(signature, expected)
 
+# ============================================================
+# 2. RATE LIMITING (DDoS Protection)
+# ============================================================
 
 class RateLimiter:
     """
     Rate limit requests to prevent abuse.
-    
     Each agent can make X requests per minute.
     """
     
-    def __init__(self, max_requests: int = 60, 
-                 window_seconds: int = 60):
+    def __init__(self, max_requests: int = 60, window_seconds: int = 60):
         self.max_requests = max_requests
         self.window = window_seconds
         self.requests: dict[str, list[float]] = {}
@@ -95,3 +98,34 @@ class RateLimiter:
             if now - t < self.window
         ]
         return max(0, self.max_requests - len(recent))
+
+
+# ============================================================
+# 3. US NEURAL ENTERPRISE MOAT (Server Access Control)
+# ============================================================
+
+API_KEY_NAME = "X-Mycelium-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+# To enable Enterprise Mode, set the env variable: MYCELIUM_ENTERPRISE_KEY
+ENTERPRISE_API_KEY = os.getenv("MYCELIUM_ENTERPRISE_KEY", None)
+
+async def verify_api_key(api_key_header: str = Security(api_key_header)):
+    """
+    US Neural Enterprise Mode Verification:
+    - If no Enterprise Key is set in the environment, run in Open-Source (Free) mode.
+    - If set, block all unauthorized registry and discovery requests.
+    """
+    # Open-Source Mode (No auth required)
+    if ENTERPRISE_API_KEY is None:
+        return True 
+        
+    # Enterprise Mode (Auth required)
+    if api_key_header == ENTERPRISE_API_KEY:
+        return True
+        
+    # Hacker / Unauthorized Access Blocked
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="US Neural Enterprise Auth: Invalid or missing API Key. Access Denied.",
+    )

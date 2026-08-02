@@ -7,15 +7,18 @@ import httpx
 from typing import Optional, Dict, Any, List
 
 class MyceliumSemanticRouter:
-    def __init__(self, base_url: str = "http://127.0.0.1:8000/api/v1"):
+    def __init__(self, base_url: str = "http://127.0.0.1:8000/api/v1", api_key: Optional[str] = None):
         self.base_url = base_url
+        self.api_key = api_key
         self._client = httpx.Client(timeout=3.0)
 
     def discover_tool(self, user_query: str, min_score: float = 0.15) -> Optional[Dict[str, Any]]:
         try:
+            headers = {"X-Mycelium-API-Key": self.api_key} if self.api_key else {}
             response = self._client.get(
                 f"{self.base_url}/agents/discover",
-                params={"q": user_query, "semantic": "true", "limit": 1}
+                params={"q": user_query, "semantic": "true", "limit": 1},
+                headers=headers
             )
             if response.status_code == 200:
                 data = response.json()
