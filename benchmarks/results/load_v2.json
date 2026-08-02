@@ -4,58 +4,58 @@
     {
       "concurrency": 10,
       "requests": 3000,
-      "throughput_rps": 188.0,
+      "throughput_rps": 141.8,
       "error_rate_pct": 0.0,
       "cache_hit_rate_pct": 85.7,
       "cold": {
         "count": 429,
-        "p50_ms": 89.85,
-        "p95_ms": 164.5,
-        "p99_ms": 202.76
+        "p50_ms": 124.67,
+        "p95_ms": 258.05,
+        "p99_ms": 288.31
       },
       "warm": {
         "count": 2571,
-        "p50_ms": 33.38,
-        "p95_ms": 119.82,
-        "p99_ms": 162.7
+        "p50_ms": 45.14,
+        "p95_ms": 157.57,
+        "p99_ms": 245.39
       }
     },
     {
       "concurrency": 50,
       "requests": 3000,
-      "throughput_rps": 140.1,
+      "throughput_rps": 124.0,
       "error_rate_pct": 0.0,
       "cache_hit_rate_pct": 85.9,
       "cold": {
         "count": 422,
-        "p50_ms": 395.36,
-        "p95_ms": 722.57,
-        "p99_ms": 1242.38
+        "p50_ms": 527.18,
+        "p95_ms": 868.55,
+        "p99_ms": 1087.49
       },
       "warm": {
         "count": 2578,
-        "p50_ms": 298.41,
-        "p95_ms": 552.22,
-        "p99_ms": 716.94
+        "p50_ms": 303.99,
+        "p95_ms": 692.53,
+        "p99_ms": 848.28
       }
     },
     {
       "concurrency": 100,
       "requests": 3000,
-      "throughput_rps": 164.0,
+      "throughput_rps": 129.7,
       "error_rate_pct": 0.0,
       "cache_hit_rate_pct": 85.9,
       "cold": {
         "count": 423,
-        "p50_ms": 751.32,
-        "p95_ms": 1193.02,
-        "p99_ms": 1470.67
+        "p50_ms": 1065.25,
+        "p95_ms": 1613.16,
+        "p99_ms": 1967.29
       },
       "warm": {
         "count": 2577,
-        "p50_ms": 459.46,
-        "p95_ms": 1145.55,
-        "p99_ms": 1974.12
+        "p50_ms": 510.81,
+        "p95_ms": 1479.94,
+        "p99_ms": 1631.08
       }
     }
   ]

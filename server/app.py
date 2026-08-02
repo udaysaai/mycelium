@@ -2,7 +2,7 @@
 🍄 Mycelium Registry Server v0.2.0
 """
 from __future__ import annotations
-
+import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Optional
@@ -251,7 +251,7 @@ async def discover_agents(
                 "semantic_enabled": True,
                 "cache_hit": True,
             }
-
+        req_t0 = time.perf_counter()
         # Cache miss — run semantic search
         semantic_matches = semantic_engine.search(
             query=q,
@@ -259,6 +259,9 @@ async def discover_agents(
             min_trust=min_trust,
         )
 
+        search_ms = (time.perf_counter() - req_t0) * 1000
+        print(f"[DISCOVER] semantic_search_ms={search_ms:.2f} q={q!r}")
+        
         results = []
         for match in semantic_matches:
             agent_id = match["agent_id"]

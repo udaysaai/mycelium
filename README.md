@@ -76,56 +76,46 @@ Any agent can:
 
 ---
 
-## ⚡ Quick Start
+## 🛠️ Quick Start
 
-### Install
+Mycelium is language-agnostic and supports both Python and JavaScript ecosystems natively.
 
+### For Python Developers (Backend & AI Frameworks)
 ```bash
 pip install mycelium-agents
 ```
 
-### Create an Agent (5 lines)
-
-```python
-from mycelium import Agent
-
-agent = Agent(name="MyAgent", description="Does amazing things")
-
-@agent.on("greet")
-def handle_greet(name: str):
-    return {"message": f"Hello, {name}! 🍄"}
-
-agent.serve()
+### For JavaScript/Web Developers (Node.js & Browsers)
+```bash
+npm install mycelium-js
 ```
 
-### Discover & Use Agents (4 lines)
+### 1. Start the Registry (Server)
 
 ```python
-from mycelium import Network
+import uvicorn
+from mycelium.server.app import app
 
-network = Network()
-agents = network.discover("I need a translator")
-result = network.request(agents[0].agent_id, "translate",
-                         {"text": "Hello", "to": "hindi"})
-# → {"translated": "नमस्ते"}
+uvicorn.run(app, host="0.0.0.0", port=8000)
 ```
 
-**That's it. Your agent is now part of the global network. 🌍**
+### 2. Discover Semantically
+No more hardcoded routing. Just describe what you need.
 
----
-
-### 🌐 Deploy a Global Agent in 3 Lines (Zero-Config)
-Mycelium automatically handles secure tunneling. No AWS, no Docker, no Port Forwarding.
-
+**Python Example:**
 ```python
-from mycelium import portal
+import httpx
+# Query: "I need to change some dollars into euros"
+response = httpx.get("http://localhost:8000/api/v1/agents/discover?q=change+dollars+into+euros&semantic=true")
+```
 
-@portal.share(name="MyGlobalAgent", description="I'm public!")
-def handle_task(query: str):
-    return f"Processed: {query}"
+**JavaScript Example (mycelium-js):**
+```javascript
+import { MyceliumClient } from 'mycelium-js';
 
-if __name__ == "__main__":
-    handle_task.serve() # Instantly live on the global registry via secure tunnel
+const client = new MyceliumClient();
+// Finds the ForexAgent with 0 keyword overlap in <15ms
+const bestTool = await client.discoverTool("I need to change some dollars into euros");
 ```
 ---
 

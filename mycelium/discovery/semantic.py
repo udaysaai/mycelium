@@ -14,6 +14,7 @@ No API key needed. 100% free.
 from __future__ import annotations
 
 import json
+import time
 from typing import Optional
 
 try:
@@ -156,6 +157,7 @@ class SemanticSearchEngine:
         min_trust: float = 0.0,
         status_filter: Optional[str] = None,
     ) -> list[dict]:
+        
         """
         Search for agents by semantic meaning.
         
@@ -175,10 +177,16 @@ class SemanticSearchEngine:
         """
         if not query.strip():
             return []
+        if self.collection.count() == 0:
+            return []
 
+        t_embed = time.perf_counter()
         # Embed the query
         query_embedding = self.model.encode(query).tolist()
 
+        embed_ms = (time.perf_counter() - t_embed) * 1000
+        
+        
         # Build where filter
         where = {}
         if min_trust > 0:
@@ -187,6 +195,7 @@ class SemanticSearchEngine:
             where["status"] = {"$eq": status_filter}
 
         try:
+            t_chroma = time.perf_counter()
             # Query ChromaDB
             results = self.collection.query(
                 query_embeddings=[query_embedding],
@@ -195,6 +204,14 @@ class SemanticSearchEngine:
                 include=["metadatas", "distances", "documents"],
             )
 
+            chroma_ms = (time.perf_counter() - t_chroma) * 1000
+            print(
+                f"[SEMANTIC] embed_ms={embed_ms:.2f} "
+                f"chroma_ms={chroma_ms:.2f} "
+                f"total_ms={embed_ms + chroma_ms:.2f} "
+                f"q={query!r}"
+            )
+            
             if not results or not results["ids"][0]:
                 return []
 
