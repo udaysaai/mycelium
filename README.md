@@ -26,7 +26,8 @@
 ## 📖 The "Tool Routing" Bottleneck
 As AI products grow, they transition from single-prompt wrappers to complex multi-tool systems. Developers today rely on hardcoded `if/else` logic, expensive LLM-based routing, or keyword matching that breaks when a user's intent doesn't exactly match a function name.
 
-**Mycelium provides a drop-in semantic discovery layer.** It allows your AI system to dynamically find and route requests to the right internal tool or agent based on meaning, not just exact keywords.
+Mycelium is an open-source **Semantic Edge Routing** protocol for Agentic Workflows.
+Stop paying the LLM latency tax for tool selection. Mycelium routes agents by true intent in <10ms locally, with zero hardcoding and zero babysitting.
 
 ## 📊 Performance Moat (v0.3.0 Benchmark)
 We refuse to trade accuracy for speed. In our latest fair-benchmark against traditional Information Retrieval (IR) methods on a corpus of **100,000 agents**:
