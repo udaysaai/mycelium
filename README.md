@@ -2,7 +2,7 @@
 
 # 🍄 Mycelium Agents
 
-### The Semantic Networking Protocol for AI Swarms
+### The Semantic Edge Routing Protocol for AI Swarms
 
 [![CI State](https://img.shields.io/github/actions/workflow/status/udaysaai/mycelium/codeql.yml?label=CI&style=for-the-badge&color=brightgreen)](https://github.com/udaysaai/mycelium/actions)
 [![PyPI Version](https://img.shields.io/pypi/v/mycelium-agents?style=for-the-badge&color=blue)](https://pypi.org/project/mycelium-agents/)
