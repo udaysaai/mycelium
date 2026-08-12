@@ -169,6 +169,12 @@ python scripts/real_world_demo.py
 
 ---
 
+## 🎬 Watch the Demo
+
+https://github.com/user-attachments/assets/2a228337-80f5-479d-8b03-02597ccdc5ef
+
+---
+
 ## 🗺️ Roadmap & Protocol Evolution
 
 - [x] **v0.1.0** — Core Networking Protocol & Direct Messaging Relay.
