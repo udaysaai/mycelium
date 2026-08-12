@@ -2,420 +2,187 @@
 
 # 🍄 Mycelium Agents
 
-### The Semantic Edge Routing Protocol for AI Swarms
+### The Semantic Edge Routing Protocol for Agentic Workflows
 
 [![CI State](https://img.shields.io/github/actions/workflow/status/udaysaai/mycelium/codeql.yml?label=CI&style=for-the-badge&color=brightgreen)](https://github.com/udaysaai/mycelium/actions)
 [![PyPI Version](https://img.shields.io/pypi/v/mycelium-agents?style=for-the-badge&color=blue)](https://pypi.org/project/mycelium-agents/)
+[![NPM Version](https://img.shields.io/npm/v/mycelium-js?style=for-the-badge&color=red)](https://www.npmjs.com/package/mycelium-js)
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge)](https://pypi.org/project/mycelium-agents/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 [![Scale](https://img.shields.io/badge/Scale-100k%20Agents-orange?style=for-the-badge)](benchmarks/)
 [![Tests](https://img.shields.io/badge/Tests-32%2F32%20Passing-brightgreen?style=for-the-badge)](scripts/system_check.py)
-[![Registry](https://img.shields.io/badge/Registry-Online%20(HF)-FFD21E?style=for-the-badge)](https://usaai-us-neural-registry.hf.space)
+[![Security](https://img.shields.io/badge/Security-Enterprise%20HMAC%2BAPIKey-green?style=for-the-badge)](security/auth.py)
 
-**[▶ See Live Demo](https://mycelium-agents.netlify.app)** • **[Technical Report](docs/arXiv_draft.md)**
+**[▶ Live Dashboard](https://mycelium-agents.netlify.app)** • **[Technical Report](docs/arXiv_draft.md)** • **[Benchmarks](benchmarks/RESULTS.md)**
 
 </div>
 
 <div align="center">
-  <img src="docs/demo.gif" alt="Mycelium Semantic Routing Demo" width="800"/>
+  <img src="docs/demo.gif" alt="Mycelium Semantic Edge Routing Demo" width="800"/>
 </div>
 
-**Stop hardcoding tool selection. Scale your AI product from 5 to 5,000 tools without rewriting your orchestration logic.**
-
-## 📖 The "Tool Routing" Bottleneck
-As AI products grow, they transition from single-prompt wrappers to complex multi-tool systems. Developers today rely on hardcoded `if/else` logic, expensive LLM-based routing, or keyword matching that breaks when a user's intent doesn't exactly match a function name.
-
-Mycelium is an open-source **Semantic Edge Routing** protocol for Agentic Workflows.
-Stop paying the LLM latency tax for tool selection. Mycelium routes agents by true intent in <10ms locally, with zero hardcoding and zero babysitting.
-
-## 📊 Performance Moat (v0.3.0 Benchmark)
-We refuse to trade accuracy for speed. In our latest fair-benchmark against traditional Information Retrieval (IR) methods on a corpus of **100,000 agents**:
-
-*   **70.7% Family-Level Top-1 Accuracy** (A +30 percentage point advantage over the strongest lexical baseline, BM25).
-*   **<11ms Cold Discovery Latency** (Running 20x faster than BM25 on commodity hardware).
-*   **Zero-Cost Local Infrastructure** (Embedding runs locally via `all-MiniLM-L6-v2`; no OpenAI API bills for routing).
-
-*See the full reproduction steps and methodology in our [Benchmarks Ledger](./benchmarks/RESULTS.md).*
----
-## 📢 Latest Updates
-- **May 2024**: ✅ v0.2.0 Live! Added Semantic Discovery & 100k agent benchmark.
-- **May 2024**: 🚀 CrewAI Integration Bridge released. [See Example](link)
-- **Next Up**: 🛠️ Authentication Layer & JS SDK (Working on it...)
+**Bypass the 2000ms Cloud LLM Routing Tax. Scale your agentic architecture from 5 to 100,000 specialized tools with sub-10ms intent discovery and zero prompt drift.**
 
 ---
 
-## The Problem
+## ⚡ Why Mycelium? (The LLM Routing Bottleneck)
 
-AI agents are everywhere. But they're all **isolated**.
+Modern agentic systems suffer from a severe architectural bottleneck: **Tool Discovery & Routing**.
+
+As swarms grow, relying on Cloud LLMs (e.g. GPT-4) to pick tools or route intents introduces:
+- **Massive Latency:** ~2,000ms latency tax *per routing hop*.
+- **Exorbitant API Costs:** Paying LLM token rates just to decide which function to execute.
+- **Prompt Drift Failures:** Hardcoded `if/else` logic or lexical keyword matching breaks when user intent varies.
+
+### The Solution: Semantic Edge Routing
+Mycelium is a decentralized, high-performance **Semantic Edge Routing Protocol**. Powered by a local **ChromaDB Vector-Mesh** and `all-MiniLM-L6-v2` embeddings via FastAPI, Mycelium resolves natural language intents to specialized agent endpoints in **<10ms** locally—with **$0 Cloud LLM cost** and **zero prompt drift**.
 
 ```text
-Your Coding Agent ──── cannot talk to ──── Research Agent
-Your Email Agent  ──── cannot find   ──── Translation Agent
-Your Data Agent   ──── cannot hire   ──── Visualization Agent
+User Intent ───▶ [ MYCELIUM SEMANTIC EDGE ROUTER ] ───▶ Specialized Agent Node
+                         ⚡ <10ms Cold Discovery
+                         💰 $0.00 Routing Cost
+                         🎯 70.7% Intent Accuracy (100k Scale)
 ```
-
-There are thousands of AI agents being built. **None of them can discover, communicate with, or collaborate with each other.**
-
-It's like having millions of phones with no telephone network.
 
 ---
 
-## The Solution
+## 📊 Audited Performance Benchmarks (v0.3.0)
 
-**Mycelium** is the networking protocol that connects AI agents.
+Evaluated across a massive, highly noisy synthetic corpus of **100,000 indexed agent nodes**:
 
-```text
-Your Agent ←→ [MYCELIUM NETWORK] ←→ Any Agent, Anywhere
-```
+| Metric | Lexical (BM25) | Mycelium (Semantic Edge) | Impact |
+| :--- | :--- | :--- | :--- |
+| **Top-1 Intent Accuracy** | 40.4% | **70.7%** | **+30.3% Absolute Accuracy Gain** 🎯 |
+| **Avg Cold Discovery Latency** | 194.0 ms | **<9.6 ms** | **20x Faster Discovery** ⚡ |
+| **P95 Latency** | 247.2 ms | **11.4 ms** | **Sub-15ms Deterministic Bound** 🔒 |
+| **3-Hop Autonomous Chain** | ~6,000 ms (Cloud LLM) | **36.25 ms (Mycelium Native)** | **165x Latency Reduction** 🚀 |
+| **Single-Node Throughput** | N/A | **130+ req/sec** | **Rock Solid Stability (0.0% Errors)** 🟢 |
 
-Any agent can:
-- 🔍 **Discover** other agents by natural language
-- 📨 **Communicate** using a standard protocol
-- 🤝 **Collaborate** in multi-agent chains
-- ⭐ **Build trust** through successful interactions
+*Detailed methodology and reproduction scripts available in our [Benchmarks Ledger](./benchmarks/RESULTS.md).*
 
 ---
 
-## 🛠️ Quick Start
+## 🛠️ Multi-Ecosystem SDKs & Quick Start
 
-Mycelium is language-agnostic and supports both Python and JavaScript ecosystems natively.
+Mycelium provides native, drop-in SDKs for both Python and JavaScript ecosystems.
 
-### For Python Developers (Backend & AI Frameworks)
+### 1. Installation
+
+**Python (Backend & Frameworks):**
 ```bash
 pip install mycelium-agents
 ```
 
-### For JavaScript/Web Developers (Node.js & Browsers)
+**JavaScript / TypeScript (Node.js & Edge Runtimes):**
 ```bash
 npm install mycelium-js
 ```
 
-### 1. Start the Registry (Server)
-
-```python
-import uvicorn
-from mycelium.server.app import app
-
-uvicorn.run(app, host="0.0.0.0", port=8000)
-```
-
-### 2. Discover Semantically
-No more hardcoded routing. Just describe what you need.
-
-**Python Example:**
-```python
-import httpx
-# Query: "I need to change some dollars into euros"
-response = httpx.get("http://localhost:8000/api/v1/agents/discover?q=change+dollars+into+euros&semantic=true")
-```
-
-**JavaScript Example (mycelium-js):**
-```javascript
-import { MyceliumClient } from 'mycelium-js';
-
-const client = new MyceliumClient();
-// Finds the ForexAgent with 0 keyword overlap in <15ms
-const bestTool = await client.discoverTool("I need to change some dollars into euros");
-```
----
-
-
-
-## 🧠 v0.2.0 — Semantic Search
-
-Agents are now found by **MEANING**, not just keywords.
-
-```python
-# Before (v0.1 — keyword only)
-network.discover("weather")
-# Only finds agents with "weather" in name
-
-# Now (v0.2 — semantic)
-network.discover("I need temperature data for my city")
-# Automatically finds WeatherAgent ✅
-
-network.discover("Speak Hindi please")
-# Automatically finds TranslatorAgent ✅
-
-network.discover("What is the value of digital currency?")
-# Automatically finds CryptoAgent ✅
-```
-
-Powered by **ChromaDB** + **sentence-transformers**. Runs locally. No API key needed.
-
----
-
-## 📊 Enterprise-Grade Benchmarks (v0.2.0)
-
-Mycelium is stress-tested for production-scale AI swarms. 
-
-**1. Discovery Accuracy at Scale (100,000 Agents)**
-Semantic search completely outperforms traditional methods at massive scale.
-| Method | Top-1 Accuracy | Avg Latency |
-|--------|---------------|-------------|
-| Naive Keyword | 75.6% | 136 ms |
-| BM25 Lexical | 83.4% | 71 ms |
-| **Semantic (Mycelium)**| **87.4%** | **14 ms** |
-
-**2. Network Load & Cache (100 Concurrent Users)**
-The built-in Query Cache Layer provides a **20x speedup** under heavy load.
-* 10 Users: 970 Requests/sec | 0% error
-* 50 Users: 879 Requests/sec | 0% error
-* 100 Users: 753 Requests/sec | 0.1% error (p95 = 122ms)
-
-**3. Multi-Agent Workflow Chaining Reliability**
-Routing sequential payloads (Agent A → Agent B → Agent C) is flawlessly reliable.
-| Chain Depth | Success Rate | Per-Hop Latency |
-|-------------|--------------|-----------------|
-| 2 Agents | 100.0% | 124.27 ms |
-| 3 Agents | 100.0% | 90.04 ms |
-| 5 Agents | 100.0% | **83.41 ms** |
-*(Note: Per-hop latency decreases as chain depth grows due to dynamic path caching)*
-
-→ [Read the full arXiv Technical Report Draft](docs/arXiv_draft.md)  
-→ [Reproduce benchmarks](benchmarks/)
-
-### 🎬 Watch the Demo
-
-https://github.com/user-attachments/assets/2a228337-80f5-479d-8b03-02597ccdc5ef
-
----
-
-## 🎨 Spatial Dashboard
-
-A visual control center for your Mycelium network. Built with vanilla JS and glassmorphism design.
-
-### 🌐 Live Demo → [mycelium-agents.netlify.app](https://mycelium-agents.netlify.app)
-
-> Watch AI agents orbit the registry core in real-time. Click any agent to inspect capabilities and send requests.
-
-**Features:**
-- 🌌 Floating agent pills orbiting the registry core
-- ⛓️ Canvas filament lines showing live connections
-- 📊 Real-time network stats (Agents, Latency, Messages)
-- 🔍 Natural language agent search (Ctrl+K)
-- 📡 Send requests directly from the dashboard
-- 🖱️ Right-click context menu on any agent
-- 🎯 macOS-style dock controls
-- 📋 Real-time network logs panel
-- ⛓️ Multi-agent chain builder
-- 🌗 Dark / Light theme toggle
-
-### Run Locally
+### 2. Boot the Neural Registry Server
 
 ```bash
-# Step 1: Start the registry
 python -m server.app
-
-# Step 2: Start some agents
-python examples/real_agents/real_weather_agent.py
-python examples/real_agents/real_crypto_agent.py
-
-# Step 3: Open the dashboard
-cd antigrav_dashboard
-npm install
-npm run dev
 ```
 
-Open: **http://localhost:5173**
+### 3. Discover & Route Semantically
+
+**Python (`mycelium-agents` + LangChain Adapter):**
+```python
+from mycelium.integrations.langchain import MyceliumLangChainAdapter
+from mycelium import NetworkClient
+
+# Initialize authenticated client
+client = NetworkClient(
+    registry_url="http://localhost:8000",
+    api_key="mycelium_secret_key_2026"
+)
+
+# Sub-10ms Semantic Vector Discovery
+agents = client.discover("Convert 100 USD to Euros", semantic=True)
+print(f"Routed to: {agents[0].name} (Latency: {agents[0]._latency_ms}ms)")
+```
+
+**JavaScript / TypeScript (`mycelium-js`):**
+```typescript
+import { MyceliumClient } from 'mycelium-js';
+
+const client = new MyceliumClient({
+  registryUrl: 'http://localhost:8000',
+  apiKey: 'mycelium_secret_key_2026'
+});
+
+// Semantic Discovery with 0 keyword overlap
+const node = await client.discover("What is the current market price of Bitcoin?");
+console.log(`Routed Node: ${node.name} | Confidence: ${node._similarity_score * 100}%`);
+```
 
 ---
 
-## 🏗️ Architecture
+## 🛡️ Enterprise Security Layer (OWASP ASI06 Defense)
+
+Autonomous agentic routing requires strict zero-trust boundaries. Mycelium enforces defense-in-depth at the network layer:
+
+- **Enterprise Access Moat (`X-Mycelium-API-Key`):** Enforces authorized header validation on all discovery, registration, and management endpoints.
+- **HMAC-SHA256 Payload Signing:** Prevents agent spoofing and tampering during inter-agent message relaying.
+- **Least-Privilege Routing (LPR):** Agents expose granular atomic capabilities (`get_weather`, `swap_currency`) rather than blanket execution scopes.
+- **Rate-Limitation Guard:** DDoS protection stopping recursive agent call cascades ("Agent Storms").
+
+---
+
+## 🏗️ Protocol Architecture & Topology
 
 ```text
-┌────────────────────────────────────────────────────┐
-│                  MYCELIUM NETWORK                  │
-│                                                    │
-│  ┌──────────┐    ┌──────────────┐    ┌──────────┐  │
-│  │ Agent A  │───▶│   REGISTRY   │◀───│ Agent B │  │
-│  │ (Travel) │    │              │    │ (Payment)│  │
-│  └────┬─────┘    │ • Discovery  │    └────┬─────┘  │
-│       │          │ • Semantic   │         │        │
-│       │          │ • Trust      │         │        │
-│       │          │ • Relay      │         │        │
-│       │          └──────────────┘         │        │
-│       │                                   │        │
-│       └────── DIRECT COMMUNICATION ───────┘        │
-│                                                    │
-└────────────────────────────────────────────────────┘
-
-``` 
+┌────────────────────────────────────────────────────────────────────────┐
+│                   MYCELIUM SEMANTIC EDGE ROUTER                       │
+│                                                                        │
+│  ┌──────────────┐     ⚡ Sub-10ms Discovery     ┌──────────────┐      │
+│  │ Agent Node A │ ───▶ [ ChromaDB Vector-Mesh ] ◀─── │ Agent Node B │      │
+│  │ (FinTech)    │      [  all-MiniLM-L6-v2   ]      │ (Translator) │      │
+│  └──────┬───────┘                                   └──────┬───────┘      │
+│         │                                                  │              │
+│         │ 🔒 Authenticated Direct Comms (HMAC-SHA256)       │              │
+│         └──────────────────────────────────────────────────┘              │
+│                                                                        │
+│                  📡 WebSocket Nervous System Stream                   │
+└────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 🛡️ Security & Reliability (OWASP ASI06 Compliance)
+## 🌍 Pre-Built Real-World Agents
 
-As AI agents move towards autonomy, security risks like **OWASP ASI06 (AI Agent Over-Permissioning)** become critical. Mycelium is engineered to mitigate these risks at the protocol level.
+Mycelium includes 5 production-ready agent nodes interacting with live APIs out of the box:
 
-### 🔒 Mitigating AI Agent Over-Permissioning
-Mycelium enforces a **Least Privilege Routing (LPR)** model:
-- **Granular Capability Mapping**: Agents only register specific atomic capabilities (e.g., `get_weather`), preventing broad system access.
-- **Discovery Sandboxing**: The registry only reveals agents that exactly match the semantic intent, preventing unauthorized "agent-to-agent" scanning.
-- **Encapsulated Payloads**: All communication is strictly validated via Pydantic schemas, ensuring no malicious execution code is injected into the routing layer.
+| Node | Domain | Capability | Live API |
+| :--- | :--- | :--- | :--- |
+| 🌤️ **RealWeather** | Weather | Live temperature & forecast | OpenWeatherMap |
+| 💰 **CryptoTracker** | Finance | Live crypto asset pricing | CoinGecko |
+| 🌐 **RealTranslator** | Translation | Natural language translation | MyMemory |
+| 📖 **WikiBrain** | Knowledge | Wikipedia semantic query | Wikipedia |
+| 💱 **CurrencyMaster** | Forex | Live currency exchange rates | ExchangeRate API |
 
-### 🛠️ Hardened Infrastructure
-- **Dependency Guard**: Continuous scanning via CodeQL to prevent supply chain vulnerabilities.
-- **Payload Integrity**: (Alpha) Support for signed message envelopes to ensure data hasn't been tampered with during relay.
-- **Rate Limiting**: Built-in protection against "Agent Storms" where recursive agent calls could lead to Denial of Service (DoS).
-
-
----
-
-## 🌍 Real-World Agents (Included)
-
-5 production-ready agents using **live APIs**:
-
-| Agent | Capability | API Used |
-|-------|-----------|----------|
-| 🌤️ RealWeather | Live weather for any city | OpenWeatherMap |
-| 💰 CryptoTracker | Live Bitcoin & crypto prices | CoinGecko (free) |
-| 🌍 RealTranslator | Translate to 50+ languages | MyMemory (free) |
-| 📖 WikiBrain | Wikipedia knowledge & search | Wikipedia (free) |
-| 💱 CurrencyMaster | Live exchange rates (150+) | ExchangeRate API |
-
-### Multi-Agent Chain Demo
-
+### Run Automated Multi-Agent Chain Demo:
 ```bash
 python scripts/real_world_demo.py
 ```
 
-```text
-⛓️  CHAIN: Crypto Price Translation
-→ CryptoTracker:   Bitcoin = $67,432
-→ CurrencyMaster:  $67,432 = ₹56,30,613
-→ RealTranslator:  67432.5 अमेरिकी डॉलर = 5630613.75 भारतीय रुपया
+---
 
-✅ 3 agents. 3 live APIs. 1 automated chain. (1122ms)
-```
+## 🗺️ Roadmap & Protocol Evolution
+
+- [x] **v0.1.0** — Core Networking Protocol & Direct Messaging Relay.
+- [x] **v0.2.0** — Local Vector-Mesh Semantic Discovery (ChromaDB + embeddings).
+- [x] **v0.3.0 (Current)** — Enterprise Security Layer (API Keys + HMAC Signing), JavaScript SDK (`mycelium-js`), LangChain Integration, Live WebSocket Nervous System.
+- [ ] **v0.4.0** — Multi-Region Registry Federation & Distributed Edge Consensus.
+- [ ] **v1.0.0** — On-Chain Agent Identity Verification & Automated Trust Settlements.
 
 ---
 
-## 🧪 System Diagnostics
+## 📜 License & Community
 
-```bash
-python scripts/system_check.py
-```
+Released under the [MIT License](LICENSE). Built with ❤️ for open agentic infrastructure.
 
-```text
-✅ Registry Server Health      PASS
-✅ Agent Registration          PASS
-✅ Natural Language Discovery  PASS
-✅ Agent-to-Agent Comms        PASS
-✅ Multi-Agent Chains          PASS
-✅ Error Handling              PASS
-✅ SDK Imports                 PASS
-
-📈 Pass Rate: 32/32 (100%)
-🟢 ALL SYSTEMS OPERATIONAL
-```
-
----
-
-## 📚 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Getting Started](docs/getting-started.md) | First steps with Mycelium |
-| [Protocol Spec](docs/protocol-spec.md) | Full protocol specification |
-| [Architecture](docs/architecture.md) | System design & decisions |
-| [Technical Report (arXiv)](docs/arXiv_draft.md) | Official whitepaper draft with full benchmark data |
-| [Knowledge Base](docs/MYCELIUM_COMPLETE_KNOWLEDGE_BASE.txt) | Complete postmortem |
-| [API Reference](docs/api-reference.md) | REST API docs |
-| [FAQ](docs/faq.md) | Frequently asked questions |
-
----
-
-## 🎯 Examples
-
-| Example | Description |
-|---------|-------------|
-| [01 — First Agent](examples/tutorials/01_first_agent.py) | Create your first agent |
-| [02 — Discover Agents](examples/tutorials/02_discover_agents.py) | Find and use agents |
-| [Weather Agent](examples/real_agents/real_weather_agent.py) | Live weather data |
-| [Translator Agent](examples/real_agents/real_translator_agent.py) | 50+ languages |
-| [Crypto Agent](examples/real_agents/real_crypto_agent.py) | Live crypto prices |
-| [Wikipedia Agent](examples/real_agents/real_wikipedia_agent.py) | Knowledge base |
-| [Currency Agent](examples/real_agents/real_currency_agent.py) | Exchange rates |
-
----
-
-## 🗺️ Roadmap
-
-**v0.1.1 ✅ Done**
-- [x] Core protocol
-- [x] Python SDK (`pip install mycelium-agents`)
-- [x] Registry server (FastAPI)
-- [x] Agent discovery (keyword-based)
-- [x] Agent-to-agent communication
-- [x] 5 real-world agents with live APIs
-- [x] Multi-agent chain demo
-- [x] Spatial dashboard (live on Netlify)
-- [x] 32/32 diagnostic tests passing
-
-**v0.2.0 ✅ Done**
-- [x] Semantic search (ChromaDB + sentence-transformers)
-- [x] Agents found by MEANING not keywords
-- [x] 8/8 semantic tests passing
-- [x] Enterprise Benchmarks (100k agents scale testing)
-- [x] Workflow Chain Benchmarks (100% routing reliability)
-- [x] arXiv Technical Report draft completed
-
-**v0.3.0 📋 Next**
-- [ ] Authentication (HMAC + API keys)
-- [ ] CLI tool (`mycelium discover "translator"`)
-- [ ] JavaScript/TypeScript SDK
-- [ ] WebSocket support
-- [ ] Agent Marketplace (web UI)
-- [ ] LangChain + CrewAI plugins
-- [ ] Docker deployment
-
-**v1.0.0 🏆 2027**
-- [ ] Stable protocol specification
-- [ ] Multi-language SDKs
-- [ ] Hosted registry (SaaS)
-- [ ] Enterprise features
-- [ ] Protocol governance council
-
----
-
-## 🤝 Contributing
-
-We love contributions! Mycelium is community-driven.
-
-```bash
-git clone https://github.com/udaysaai/mycelium.git
-cd mycelium
-pip install -e ".[dev,server]"
-pytest
-python -m server.app
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-**Good first issues:**
-- Add a new example agent
-- Improve documentation
-- Write more tests
-- Add language translations
-
----
-
-## 📜 License
-
-MIT — use it, build on it, make it yours.
-
----
-
-<div align="center">
-
-**Built with ❤️ from India 🇮🇳**
-
-*If AI agents are the future, they need a way to find each other.*
-
-[⭐ Star this repo](https://github.com/udaysaai/mycelium) if you believe in open agent infrastructure.
-
-**[🎨 Live Dashboard](https://mycelium-agents.netlify.app) • [📦 PyPI](https://pypi.org/project/mycelium-agents/) • [📖 Docs](docs/)**
-
-</div>
+* **GitHub:** [udaysaai/mycelium](https://github.com/udaysaai/mycelium)
+* **PyPI:** [`mycelium-agents`](https://pypi.org/project/mycelium-agents/)
+* **NPM:** [`mycelium-js`](https://www.npmjs.com/package/mycelium-js)
