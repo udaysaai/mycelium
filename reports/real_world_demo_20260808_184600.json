@@ -1,0 +1,94 @@
+{
+  "title": "🌍 MYCELIUM — REAL WORLD MULTI-AGENT DEMONSTRATION REPORT",
+  "generated_at": "2026-08-08 13:15:46 UTC",
+  "chains": [
+    {
+      "name": "Crypto Price Translation",
+      "description": "Get Bitcoin price → Convert to INR → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Bitcoin Price in USD",
+          "agent": "crypto",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2227.5,
+      "status": "failed",
+      "started_at": "2026-08-08T13:15:49.267093+00:00",
+      "completed_at": "2026-08-08T13:15:51.494659+00:00"
+    },
+    {
+      "name": "Global Weather in Hindi",
+      "description": "Get REAL weather of Tokyo → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Live Weather for Tokyo",
+          "agent": "weather",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2216.0,
+      "status": "failed",
+      "started_at": "2026-08-08T13:15:51.494685+00:00",
+      "completed_at": "2026-08-08T13:15:53.710740+00:00"
+    },
+    {
+      "name": "Knowledge Translation",
+      "description": "Get Wikipedia summary of 'Artificial Intelligence' → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get AI Wikipedia Summary",
+          "agent": "wiki",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2248.2,
+      "status": "failed",
+      "started_at": "2026-08-08T13:15:53.710767+00:00",
+      "completed_at": "2026-08-08T13:15:55.959022+00:00"
+    },
+    {
+      "name": "Multi-City Weather",
+      "description": "Get REAL weather for Mumbai and convert temperature description to Japanese",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Mumbai Weather",
+          "agent": "weather",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2243.9,
+      "status": "failed",
+      "started_at": "2026-08-08T13:15:55.959043+00:00",
+      "completed_at": "2026-08-08T13:15:58.202970+00:00"
+    },
+    {
+      "name": "Ethereum Full Pipeline",
+      "description": "Ethereum price → Convert to EUR → Get Ethereum Wikipedia info",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Ethereum Price",
+          "agent": "crypto",
+          "status": "agent_not_found"
+        }
+      ],
+      "total_time_ms": 2258.6,
+      "status": "failed",
+      "started_at": "2026-08-08T13:15:58.203005+00:00",
+      "completed_at": "2026-08-08T13:16:00.461594+00:00"
+    }
+  ],
+  "summary": {
+    "total_chains": 5,
+    "successful_chains": 0,
+    "total_steps_executed": 5,
+    "steps_with_real_data": 0,
+    "unique_agents_used": 0,
+    "total_time_ms": 11194.2
+  }
+}

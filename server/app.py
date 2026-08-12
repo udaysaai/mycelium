@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
 from security.auth import verify_api_key
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -24,6 +24,32 @@ SEMANTIC_ENABLED = False
 # Query result cache
 _query_cache: dict[str, list] = {}
 _CACHE_MAX_SIZE = 500
+
+
+# ============================================================
+# WEBSOCKET CONNECTION MANAGER
+# ============================================================
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast_json(self, message: dict):
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except:
+                pass
+
+ws_manager = ConnectionManager()
+
 
 
 # ============================================================
@@ -295,6 +321,15 @@ async def discover_agents(
         # Store in cache
         cache_set(q, limit, results)
 
+        if results:
+            # Broadcast to UI
+            await ws_manager.broadcast_json({
+                "event": "routed",
+                "query": q,
+                "agent_id": results[0]["agent_id"],
+                "agent_name": results[0]["name"]
+            })
+
         return {
             "query": q,
             "search_type": "semantic_v2",
@@ -438,6 +473,14 @@ async def send_message(message: MessageRequest):
                     datetime.now(timezone.utc).isoformat()
                 )
 
+                # Broadcast to UI for the live sync animation
+                await ws_manager.broadcast_json({
+                    "event": "routed",
+                    "query": message.payload.get("capability", "Direct Route"),
+                    "agent_id": target_agent["agent_id"],
+                    "agent_name": target_agent["name"]
+                })
+
                 return response_data
 
             raise HTTPException(
@@ -497,6 +540,20 @@ async def clear_cache():
     """Manually clear the query cache."""
     cache_invalidate()
     return {"status": "cache_cleared"}
+
+
+# ============================================================
+# WEBSOCKET ROUTE
+# ============================================================
+
+@app.websocket("/ws/stream")
+async def websocket_endpoint(websocket: WebSocket):
+    await ws_manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
 
 
 # ============================================================

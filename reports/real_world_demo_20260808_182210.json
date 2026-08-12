@@ -1,0 +1,308 @@
+{
+  "title": "🌍 MYCELIUM — REAL WORLD MULTI-AGENT DEMONSTRATION REPORT",
+  "generated_at": "2026-08-08 12:51:03 UTC",
+  "chains": [
+    {
+      "name": "Crypto Price Translation",
+      "description": "Get Bitcoin price → Convert to INR → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Bitcoin Price in USD",
+          "agent": "crypto",
+          "agent_id": "ag_f9b4abecc49b",
+          "capability": "get_crypto_price",
+          "inputs": {
+            "coin": "bitcoin",
+            "currency": "usd"
+          },
+          "output": {
+            "coin": "bitcoin",
+            "price": 64967,
+            "currency": "USD",
+            "change_24h_percent": -0.41,
+            "market_cap": 1303711417850.4895,
+            "trend": "📉 DOWN",
+            "data_source": "CoinGecko API (LIVE)",
+            "is_real_data": true
+          },
+          "time_ms": 5649.7,
+          "is_real_data": true,
+          "status": "success"
+        },
+        {
+          "step": 2,
+          "label": "Convert USD to INR",
+          "agent": "currency",
+          "agent_id": "ag_9ceeef888303",
+          "capability": "convert_currency",
+          "inputs": {
+            "amount": 64967,
+            "from_currency": "USD",
+            "to_currency": "INR"
+          },
+          "output": {
+            "original_amount": 64967,
+            "from_currency": "USD",
+            "to_currency": "INR",
+            "exchange_rate": 95.24,
+            "converted_amount": 6187457.08,
+            "formatted": "64967 USD = 6187457.08 INR",
+            "data_source": "ExchangeRate API (LIVE)",
+            "is_real_data": true
+          },
+          "time_ms": 5949.3,
+          "is_real_data": true,
+          "status": "success"
+        },
+        {
+          "step": 3,
+          "label": "Translate Result to Hindi",
+          "agent": "translator",
+          "agent_id": "ag_556ca44b7126",
+          "capability": "translate_real",
+          "inputs": {
+            "text": "64967 USD = 6187457.08 INR",
+            "to_lang": "hindi"
+          },
+          "output": {},
+          "time_ms": 4932.3,
+          "is_real_data": false,
+          "status": "success"
+        }
+      ],
+      "total_time_ms": 16532.4,
+      "status": "success",
+      "started_at": "2026-08-08T12:51:06.188208+00:00",
+      "completed_at": "2026-08-08T12:51:22.720668+00:00"
+    },
+    {
+      "name": "Global Weather in Hindi",
+      "description": "Get REAL weather of Tokyo → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Live Weather for Tokyo",
+          "agent": "weather",
+          "agent_id": "ag_d34681c815ba",
+          "capability": "get_live_weather",
+          "inputs": {
+            "city": "Tokyo"
+          },
+          "output": {
+            "city": "Tokyo",
+            "country": "JP",
+            "temperature_celsius": 27.9,
+            "feels_like": 31.9,
+            "humidity": 81,
+            "condition": "overcast clouds",
+            "wind_speed": 0.45,
+            "pressure": 1008,
+            "visibility": 10000,
+            "data_source": "OpenWeatherMap API (LIVE)",
+            "is_real_data": true
+          },
+          "time_ms": 5166.2,
+          "is_real_data": true,
+          "status": "success"
+        },
+        {
+          "step": 2,
+          "label": "Translate Weather to Hindi",
+          "agent": "translator",
+          "agent_id": "ag_556ca44b7126",
+          "capability": "translate_real",
+          "inputs": {
+            "text": "overcast clouds",
+            "to_lang": "hindi"
+          },
+          "output": {},
+          "time_ms": 4961.9,
+          "is_real_data": false,
+          "status": "success"
+        }
+      ],
+      "total_time_ms": 10128.9,
+      "status": "success",
+      "started_at": "2026-08-08T12:51:22.721281+00:00",
+      "completed_at": "2026-08-08T12:51:32.850161+00:00"
+    },
+    {
+      "name": "Knowledge Translation",
+      "description": "Get Wikipedia summary of 'Artificial Intelligence' → Translate to Hindi",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get AI Wikipedia Summary",
+          "agent": "wiki",
+          "agent_id": "ag_ebefc170897f",
+          "capability": "wiki_summary",
+          "inputs": {
+            "topic": "Artificial Intelligence"
+          },
+          "output": {
+            "error": "API error: 403",
+            "is_real_data": false
+          },
+          "time_ms": 5384.5,
+          "is_real_data": false,
+          "status": "error"
+        },
+        {
+          "step": 2,
+          "label": "Translate to Hindi",
+          "agent": "translator",
+          "agent_id": "ag_556ca44b7126",
+          "capability": "translate_real",
+          "inputs": {
+            "text": "$prev.summary",
+            "to_lang": "hindi"
+          },
+          "output": {},
+          "time_ms": 4956.3,
+          "is_real_data": false,
+          "status": "success"
+        }
+      ],
+      "total_time_ms": 10341.2,
+      "status": "partial",
+      "started_at": "2026-08-08T12:51:32.850647+00:00",
+      "completed_at": "2026-08-08T12:51:43.191828+00:00"
+    },
+    {
+      "name": "Multi-City Weather",
+      "description": "Get REAL weather for Mumbai and convert temperature description to Japanese",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Mumbai Weather",
+          "agent": "weather",
+          "agent_id": "ag_d34681c815ba",
+          "capability": "get_live_weather",
+          "inputs": {
+            "city": "Mumbai"
+          },
+          "output": {
+            "city": "Mumbai",
+            "country": "IN",
+            "temperature_celsius": 28.5,
+            "feels_like": 33.1,
+            "humidity": 78,
+            "condition": "light rain",
+            "wind_speed": 7.22,
+            "pressure": 1006,
+            "visibility": 10000,
+            "data_source": "OpenWeatherMap API (LIVE)",
+            "is_real_data": true
+          },
+          "time_ms": 5227.2,
+          "is_real_data": true,
+          "status": "success"
+        },
+        {
+          "step": 2,
+          "label": "Translate to Japanese",
+          "agent": "translator",
+          "agent_id": "ag_556ca44b7126",
+          "capability": "translate_real",
+          "inputs": {
+            "text": "light rain",
+            "to_lang": "japanese"
+          },
+          "output": {},
+          "time_ms": 4950.1,
+          "is_real_data": false,
+          "status": "success"
+        }
+      ],
+      "total_time_ms": 10177.9,
+      "status": "success",
+      "started_at": "2026-08-08T12:51:43.192336+00:00",
+      "completed_at": "2026-08-08T12:51:53.370218+00:00"
+    },
+    {
+      "name": "Ethereum Full Pipeline",
+      "description": "Ethereum price → Convert to EUR → Get Ethereum Wikipedia info",
+      "steps": [
+        {
+          "step": 1,
+          "label": "Get Ethereum Price",
+          "agent": "crypto",
+          "agent_id": "ag_f9b4abecc49b",
+          "capability": "get_crypto_price",
+          "inputs": {
+            "coin": "ethereum",
+            "currency": "usd"
+          },
+          "output": {
+            "coin": "ethereum",
+            "price": 1919.08,
+            "currency": "USD",
+            "change_24h_percent": -0.61,
+            "market_cap": 231570956504.64554,
+            "trend": "📉 DOWN",
+            "data_source": "CoinGecko API (LIVE)",
+            "is_real_data": true
+          },
+          "time_ms": 5636.4,
+          "is_real_data": true,
+          "status": "success"
+        },
+        {
+          "step": 2,
+          "label": "Convert to EUR",
+          "agent": "currency",
+          "agent_id": "ag_9ceeef888303",
+          "capability": "convert_currency",
+          "inputs": {
+            "amount": 1919.08,
+            "from_currency": "USD",
+            "to_currency": "EUR"
+          },
+          "output": {
+            "original_amount": 1919.08,
+            "from_currency": "USD",
+            "to_currency": "EUR",
+            "exchange_rate": 0.866,
+            "converted_amount": 1661.92,
+            "formatted": "1919.08 USD = 1661.92 EUR",
+            "data_source": "ExchangeRate API (LIVE)",
+            "is_real_data": true
+          },
+          "time_ms": 6043.0,
+          "is_real_data": true,
+          "status": "success"
+        },
+        {
+          "step": 3,
+          "label": "Wikipedia: What is Ethereum?",
+          "agent": "wiki",
+          "agent_id": "ag_ebefc170897f",
+          "capability": "wiki_summary",
+          "inputs": {
+            "topic": "Ethereum"
+          },
+          "output": {
+            "error": "API error: 403",
+            "is_real_data": false
+          },
+          "time_ms": 5437.0,
+          "is_real_data": false,
+          "status": "error"
+        }
+      ],
+      "total_time_ms": 17117.8,
+      "status": "partial",
+      "started_at": "2026-08-08T12:51:53.370807+00:00",
+      "completed_at": "2026-08-08T12:52:10.488582+00:00"
+    }
+  ],
+  "summary": {
+    "total_chains": 5,
+    "successful_chains": 3,
+    "total_steps_executed": 12,
+    "steps_with_real_data": 6,
+    "unique_agents_used": 5,
+    "total_time_ms": 64298.2
+  }
+}

@@ -3,6 +3,7 @@
 // --- CONFIGURATION ---
 const CONFIG = {
     API_BASE: import.meta.env.VITE_API_BASE || 'https://usaai-us-neural-registry.hf.space',
+    WS_URL: 'ws://127.0.0.1:8000/ws/stream',
     POLL_INTERVAL: 5000,
     DEFAULT_SWARM: [
         {
@@ -152,8 +153,9 @@ function initEventListeners() {
     // 1. Theme Toggle
     const themeBtn = document.getElementById('theme-toggle');
     if(themeBtn) themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        state.theme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+        const isLight = document.body.classList.toggle('light-theme');
+        document.body.classList.toggle('dark-theme', !isLight);
+        state.theme = isLight ? 'light' : 'dark';
     });
 
     // 2. Visual Chain Builder Bindings
@@ -1133,6 +1135,42 @@ async function executeVisualChain() {
     triggerCorePulse();
 }
 
+// ============================================
+// WEBSOCKET — LIVE NEURAL LINK
+// ============================================
+
+function initWebSocket() {
+    const ws = new WebSocket(CONFIG.WS_URL);
+
+    ws.onopen = () => console.log("🟢 Live Neural Link Established.");
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.event === "routed") {
+            // Trigger the glowing animation to the specific agent
+            state.activeConnections[data.agent_id] = {
+                timestamp: performance.now(),
+                success: true
+            };
+
+            // Show a success toast
+            showToast(`Live Route: "${data.query}" ⚡ ${data.agent_name}`, 'success');
+
+            // Increment message counter visually
+            incrementMessages();
+
+            // Make the core pulse
+            triggerCorePulse();
+        }
+    };
+
+    ws.onclose = () => {
+        console.log("🔴 Neural Link Lost. Reconnecting...");
+        setTimeout(initWebSocket, 3000);
+    };
+}
+
 // --- BOOT SEQUENCE ---
 
 function initBootSequence() {
@@ -1153,5 +1191,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
     fetchRegistrySync();
     setInterval(fetchRegistrySync, CONFIG.POLL_INTERVAL);
-    initBootSequence();   // ✅ Yahan rakho
+    initBootSequence();
+    initWebSocket();
 });

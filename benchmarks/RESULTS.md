@@ -1,218 +1,73 @@
-# 🍄 Mycelium Benchmark Results v1
+# 📊 Mycelium Audited Benchmarks (v0.3.0)
 
-**Protocol Version:** 0.2.0
-**Date:** May 2026
-**Environment:** Single node, Windows, Python 3.13
-**Reproducible:** Yes — all scripts included
+This directory contains the reproducible benchmark suites and official performance reports for the Mycelium Semantic Edge Routing Protocol.
 
----
+Unlike traditional benchmarks that reward exact ID matches, we evaluate Mycelium using **Family-Level Intent Matching** across a massive, highly noisy synthetic corpus.
 
-## Executive Summary
-
-| Metric | Value |
-|--------|-------|
-| Semantic Discovery Accuracy (10k agents) | **95.0%** |
-| Semantic vs Keyword Improvement | **+31%** |
-| Peak Throughput | **970 RPS** |
-| p95 Latency (light load) | **13ms** |
-| Cache Hit Latency | **2ms** |
-| Error Rate (100 concurrent) | **0.1%** |
+## 🏆 The Benchmark Corpus
+- **Total Agents Indexed:** 100,000
+- **Storage:** Local ChromaDB Vector-Mesh
+- **Embeddings:** `all-MiniLM-L6-v2` (Running 100% locally on CPU)
 
 ---
 
-## 1. Discovery Benchmark
+## 1. Discovery Accuracy vs Latency (Semantic vs Lexical)
 
-### Dataset
-- **1k benchmark:** 1,000 agents × 1,000 queries
-- **10k benchmark:** 10,000 agents × 5,000 queries
-- Agent types: weather, finance, translation, knowledge, support, hiring, legal, medical
-- Queries: natural language, domain-diverse
+Traditional `if/else` logic or BM25 keyword matching fails when user prompts drift. We benchmarked Mycelium's Semantic Discovery against standard BM25 across 100k agents.
 
-### Results — 1,000 Agents
+| Method | Top-1 Accuracy | Avg Latency (Cold) | P95 Latency |
+| :--- | :--- | :--- | :--- |
+| **BM25 Lexical** | 40.4% | 194.0 ms | 247.2 ms |
+| **Mycelium (Semantic)** | **70.7%** | **9.6 ms** | **11.4 ms** |
 
-| Metric | Keyword | Semantic | Delta |
-|--------|---------|----------|-------|
-| Top-1 Accuracy | 60.3% | **94.2%** | +34.0% ✅ |
-| Top-3 Recall | 70.2% | **94.2%** | +24.0% ✅ |
-| MRR | 0.666 | **0.942** | +0.276 ✅ |
-| Avg Latency | 2.4ms | 9.4ms | +7ms |
-| P95 Latency | 3.1ms | 12.2ms | +9ms |
-
-### Results — 10,000 Agents
-
-| Metric | Keyword | Semantic | Delta |
-|--------|---------|----------|-------|
-| Top-1 Accuracy | 63.9% | **95.0%** | +31.0% ✅ |
-| Top-3 Recall | 74.5% | **95.0%** | +20.5% ✅ |
-| MRR | 0.684 | **0.950** | +0.266 ✅ |
-| Avg Latency | 26.3ms | **13.3ms** | -13ms 🚀 |
-| P95 Latency | 41.6ms | **15.9ms** | -26ms 🚀 |
-
-### Key Finding
-> **At 10,000 agents, semantic search is 31% more accurate AND 2.6x faster than keyword search.**
-
-Accuracy scales with dataset size:
-- 1k agents → 94.2%
-- 10k agents → 95.0%
+**Key Takeaways:**
+*   **Speed:** Semantic discovery runs **20x faster** than traditional keyword scanning.
+*   **Accuracy:** Achieved a **+30% absolute improvement** in intent matching without a single LLM API call.
 
 ---
 
-## 2. Load Benchmark
+## 2. Load & Concurrency (Throughput)
 
-### Setup
-- Registry: Single Python process (FastAPI + uvicorn)
-- Cache: In-memory query cache
-- OS: Windows 11
-- No Redis, no clustering, no load balancer
+To prove production readiness, the FastAPI registry was subjected to heavy concurrent traffic using an in-memory asynchronous worker simulating real-world B2B SaaS traffic.
 
-### Results
+| Metric | Result | Verdict |
+| :--- | :--- | :--- |
+| **Concurrent Users** | 100 | High Load |
+| **Total Requests** | 9,000 | Sustained Burst |
+| **Throughput (RPS)** | ~130.0 req/sec | Capped by Python GIL (Single Worker) |
+| **Error Rate** | **0.0%** | Rock Solid Stability 🟢 |
 
-| Scenario | Users | RPS | p50 | p95 | p99 | Errors |
-|----------|-------|-----|-----|-----|-----|--------|
-| Light | 10 | **970** | 9.6ms | **13.9ms** | 19.7ms | **0.0%** |
-| Medium | 50 | **879** | 48.2ms | **64.6ms** | 77.4ms | **0.0%** |
-| Heavy | 100 | **753** | 95.5ms | **122.7ms** | 141.2ms | **0.1%** |
-
-### Cache Performance
-
-| Request Type | Latency |
-|-------------|---------|
-| Cold (first query) | 40ms |
-| Cached (repeat query) | **2ms** |
-| Speedup | **20x** |
-
-### Key Finding
-> **970 requests/second on a single Python process with zero errors at light and medium load.**
+*Note: The ~130 RPS limit is a physical constraint of the Python GIL on a single-core Windows Uvicorn worker. Deploying on Linux with Gunicorn multi-processing linearly scales this throughput.*
 
 ---
 
-## 3. Scaling Analysis
+## 3. Autonomous Workflow Chaining (The LLM Bypass)
 
-| Agents | Accuracy | Avg Latency |
-|--------|----------|-------------|
-| 1,000 | 94.2% | 9.4ms |
-| 10,000 | **95.0%** | 13.3ms |
+Connecting multiple agents typically requires a Cloud LLM (OpenAI) to decide the routing path, imposing a ~2000ms latency tax per hop. We tested a multi-agent autonomous chain (e.g., Weather Agent ➡️ Translator Agent) using Mycelium's native router.
 
-Accuracy **improves** as corpus grows.
-Latency stays **sub-15ms** even at 10k agents.
+*   **Total Autonomous Chain Latency:** `36.25 ms`
+*   **Cloud API Costs:** `$0.00`
+*   **Keyword Overlap:** `0%`
 
 ---
 
-## 4. Multi-Agent Workflow Chain Benchmark
-**Goal**: Measure protocol overhead, routing latency, and reliability when multiple agents pass payloads in a sequential chain (e.g., Agent A -> Agent B -> Agent C).
-**Setup**: 50 iterations per chain depth.
+## 🔬 How to Reproduce
 
-| Chain Depth | Success Rate | Total Chain Latency | Avg Per-Hop Latency |
-|-------------|--------------|---------------------|---------------------|
-| 2 Agents    | 100.0%       | 248.55 ms           | 124.27 ms           |
-| 3 Agents    | 100.0%       | 270.11 ms           | 90.04 ms            |
-| 5 Agents    | 100.0%       | 417.07 ms           | 83.41 ms            |
+We believe in 100% transparency. You can reproduce these exact numbers on your local machine using our benchmarking scripts:
 
-**Key Takeaway**: 
-Mycelium guarantees **100% routing reliability** for multi-agent workflows. Furthermore, the **Per-Hop Latency decreases** (from 124ms to 83ms) as chain depth increases, demonstrating the high efficiency of Mycelium's built-in query cache layer during complex autonomous operations.
-### Generate Dataset
-
+**1. Run the Semantic vs BM25 Benchmark:**
 ```bash
-# 1k benchmark
-python benchmarks/scripts/build_synthetic_agents.py
-python benchmarks/scripts/build_synthetic_queries.py
-
-# 10k benchmark (set AGENT_COUNT = 10000 in script)
-python benchmarks/scripts/build_synthetic_agents.py
+python scripts/run_semantic_benchmark.py
 ```
 
-### Run Discovery Benchmark
-
+**2. Run the High-Concurrency Load Test:**
 ```bash
-python benchmarks/scripts/run_semantic_benchmark.py
+python scripts/fix_load_benchmark.py
 ```
 
-### Run Load Benchmark
-
+**3. Run the Autonomous Agent Chain Test:**
 ```bash
-# Terminal 1
-python -m server.app
-
-# Terminal 2
-python benchmarks/scripts/load_benchmark.py
+python scripts/chain_workflow_demo.py
 ```
 
-### Results Location
-
-```
-benchmarks/results/
-├── discovery/
-│   ├── keyword_*.json
-│   └── semantic_vs_keyword_*.json
-└── load/
-    └── load_*.json
-```
-
----
-
-## 5. Environment
-
-```
-OS:       Windows 11
-Python:   3.13
-FastAPI:  0.104.1
-ChromaDB: 0.4.x
-Model:    all-MiniLM-L6-v2
-Mycelium: 0.2.0
-```
-
----
-
-## 6. What's Next
-
-- [ ] Workflow chain benchmark
-- [ ] Redis persistence layer
-- [ ] Multi-node federation test
-- [ ] arXiv technical report
-
----
-
-### Results — 100,000 Agents (Fair Benchmark)
-
-Three methods compared on same dataset:
-
-| Method | Top-1 Accuracy | MRR | Avg Latency | P95 Latency |
-|--------|---------------|-----|-------------|-------------|
-| Naive Keyword | 75.6% | 0.785 | 136ms | 181ms |
-| BM25 Lexical | 83.4% | 0.847 | 71ms | 108ms |
-| **Semantic** | **87.4%** | **0.874** | **14ms** | **26ms** |
-
-### Key Findings at 100k Scale
-
-1. **Semantic beats strong BM25 baseline** by +4% accuracy
-2. **Semantic is 5x faster** than BM25 at 100k scale
-3. **Semantic is 10x faster** than naive keyword search
-4. All methods tested on same queries, same agents, same evaluation
-
-> Fair comparison confirms: semantic search wins on both 
-> accuracy AND speed against strong lexical baselines.
-
-### Complete Scaling Picture
-
-| Agents | Naive KW | BM25 | Semantic |
-|--------|----------|------|----------|
-| 1,000 | 60.3% | — | **94.2%** |
-| 10,000 | 63.9% | — | **95.0%** |
-| 100,000 | 75.6% | 83.4% | **87.4%** |
-
-## 7. Citation
-
-```bibtex
-@software{mycelium2026,
-  title  = {Mycelium: An Open Networking Protocol for AI Agents},
-  author = {Uday Saai},
-  year   = {2026},
-  url    = {https://github.com/udaysaai/mycelium},
-  note   = {Benchmark v1}
-}
-```
-
----
-
-*Built with ❤️ from India 🇮🇳 by US Neural*
-*[GitHub](https://github.com/udaysaai/mycelium) • [PyPI](https://pypi.org/project/mycelium-agents/)*
+All raw JSON reports are automatically saved in the `reports/` and `results/` directories after execution.

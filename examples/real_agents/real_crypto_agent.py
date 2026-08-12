@@ -2,7 +2,9 @@
 💰 REAL Crypto Agent — Uses CoinGecko API (NO API key needed!)
 Provides live cryptocurrency prices.
 """
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 import httpx
 from mycelium import Agent
 

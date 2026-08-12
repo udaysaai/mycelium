@@ -2,7 +2,9 @@
 💱 REAL Currency Agent — Uses ExchangeRate API
 Converts between 150+ currencies with REAL live rates.
 """
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 import os
 import httpx
 from dotenv import load_dotenv
