@@ -11,6 +11,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, WebSocket, WebSocket
 from security.auth import verify_api_key
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from server.models.database import AgentDB, init_db
 
 # ============================================================
 # GLOBALS
@@ -96,6 +97,19 @@ async def lifespan(app: FastAPI):
         SEMANTIC_ENABLED = False
         print(f"⚠️ Semantic search disabled: {e}")
 
+    # Restore agents from persistent SQLite storage
+    init_db()
+    saved_agents = AgentDB.list_all(limit=100000)
+    for a in saved_agents:
+        agents_db[a["agent_id"]] = a
+        if SEMANTIC_ENABLED and semantic_engine:
+            try:
+                semantic_engine.index_agent(a)
+            except Exception:
+                pass
+    if saved_agents:
+        print(f"💾 Restored {len(saved_agents)} agents from SQLite database.")
+
     yield
 
     print("👋 Registry shutting down.")
@@ -176,6 +190,7 @@ async def register_agent(agent: RegisterRequest):
     agent_data["status"] = "online"
 
     agents_db[agent.agent_id] = agent_data
+    AgentDB.save(agent_data)
 
     # Index in semantic engine
     if SEMANTIC_ENABLED and semantic_engine:
@@ -205,6 +220,7 @@ async def deregister_agent(agent_id: str):
 
     name = agents_db[agent_id]["name"]
     del agents_db[agent_id]
+    AgentDB.delete(agent_id)
 
     # Remove from semantic index
     if SEMANTIC_ENABLED and semantic_engine:
@@ -243,8 +259,21 @@ async def list_agents(
         "network_size": len(agents_db),
     }
 
+@app.get("/api/v1/discover", include_in_schema=False)
+async def discover_alias(
+    q: str = Query(..., description="Search query"),
+    capability: Optional[str] = Query(default=None),
+    tags: Optional[str] = Query(default=None),
+    min_trust: float = Query(default=0.0),
+    limit: int = Query(default=10, le=50),
+    semantic: bool = Query(default=True),
+):
+    return await discover_agents(
+        q=q, capability=capability, tags=tags, min_trust=min_trust, limit=limit, semantic=semantic
+    )
 
-@app.get("/api/v1/agents/discover", dependencies=[Depends(verify_api_key)])
+@app.get("/api/v1/discover", include_in_schema=False)
+@app.get("/api/v1/agents/discover")
 async def discover_agents(
     q: str = Query(..., description="Search query"),
     capability: Optional[str] = Query(default=None),

@@ -40,6 +40,23 @@ class TestAgentCreation:
         assert "hindi" in agent.card.languages
         assert "test" in agent.card.tags
 
+    def test_agent_custom_agent_id(self):
+        agent = Agent(
+            name="WikiBrain",
+            description="Wikipedia lookup",
+            agent_id="ag_demo_wiki",
+        )
+        assert agent.agent_id == "ag_demo_wiki"
+        assert agent.card.agent_id == "ag_demo_wiki"
+
+    def test_agent_port_config(self):
+        agent = Agent(
+            name="PortAgent",
+            description="Agent with port",
+            port=8013,
+        )
+        assert agent.card.endpoint == "http://localhost:8013"
+
 
 class TestCapabilities:
     """Test capability registration and execution."""

@@ -71,6 +71,8 @@ class Agent:
         pricing: Optional[PricingInfo] = None,
         registry_url: str = DEFAULT_REGISTRY,
         endpoint: Optional[str] = None,
+        agent_id: Optional[str] = None,
+        port: Optional[int] = None,
     ):
         """
         Create a new Mycelium agent.
@@ -85,6 +87,8 @@ class Agent:
             pricing: How you charge for requests
             registry_url: URL of the Mycelium registry
             endpoint: URL where your agent receives requests
+            agent_id: Optional custom or deterministic agent ID
+            port: Optional port number (shorthand to construct endpoint if not provided)
         """
         self._capabilities: dict[str, Capability] = {}
         self._handlers: dict[str, Callable] = {}
@@ -92,17 +96,24 @@ class Agent:
         self._is_registered = False
         self._is_serving = False
 
+        if port is not None and endpoint is None:
+            endpoint = f"http://localhost:{port}"
+
         # Build the Agent Card
-        self.card = AgentCard(
-            name=name,
-            description=description,
-            version=version,
-            author=author,
-            languages=languages or ["english"],
-            tags=tags or [],
-            pricing=pricing or PricingInfo(),
-            endpoint=endpoint,
-        )
+        card_kwargs: dict[str, Any] = {
+            "name": name,
+            "description": description,
+            "version": version,
+            "author": author,
+            "languages": languages or ["english"],
+            "tags": tags or [],
+            "pricing": pricing or PricingInfo(),
+            "endpoint": endpoint,
+        }
+        if agent_id:
+            card_kwargs["agent_id"] = agent_id
+
+        self.card = AgentCard(**card_kwargs)
 
         console.print(
             f"[green]🍄 Agent '{name}' created![/green] "

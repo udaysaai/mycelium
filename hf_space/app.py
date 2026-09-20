@@ -1,5 +1,5 @@
 import os
-from mycelium.server.app import app
+from server.app import app
 
 # Hugging Face runs on port 7860 by default
 if __name__ == "__main__":

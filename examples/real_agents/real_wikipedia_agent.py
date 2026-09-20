@@ -1,75 +1,68 @@
 """
-📖 REAL Wikipedia Agent — Uses Wikipedia API (NO API key needed!)
-Fetches real knowledge from Wikipedia.
+🍄 US Neural: Real Wikipedia Knowledge Agent (WikiBrain)
+Live Wikipedia REST API integration for real-time semantic discovery.
+Port: 8013
 """
-import sys
+
+from __future__ import annotations
+
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+import sys
+from pathlib import Path
+from typing import Any, Dict
+
 import httpx
-from mycelium import Agent
 
+# Ensure project root is in sys.path for direct script execution
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from mycelium.core.agent import Agent
+
+# Wikimedia requires a distinct User-Agent to prevent 403 Forbidden
+WIKIPEDIA_HEADERS = {
+    "User-Agent": "MyceliumProtocol/0.3.0 (https://github.com/udaysaai/mycelium; contact@usneural.ai)"
+}
+
+# 1. Initialize Agent
 agent = Agent(
+    agent_id="ag_demo_wiki",
     name="WikiBrain",
-    description="Fetches REAL knowledge from Wikipedia — summaries, key facts, and search for any topic",
-    version="1.0.0",
-    tags=["wikipedia", "knowledge", "real", "search", "facts", "encyclopedia"],
-    languages=["english"],
-    endpoint="http://localhost:8013",     # ← YEH ADD KAR
+    description="Real knowledge and factual information lookup from Wikipedia API",
+    tags=["knowledge", "wiki", "encyclopedia", "research"],
+    version="0.3.0",
+    endpoint="http://localhost:8013",
 )
 
 
-@agent.on(
-    "wiki_summary",
-    description="Get a summary of any topic from Wikipedia",
-    input_schema={"topic": "string — any topic (person, place, concept, etc.)"},
-    output_schema={"title": "string", "summary": "string", "url": "string"},
-)
-def wiki_summary(topic: str):
-    """Get Wikipedia summary for a topic."""
-    url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + topic.replace(" ", "_")
+# 2. Capability: Search Wikipedia
+@agent.on("wiki_search")
+def search_wikipedia(query: str = "", **kwargs) -> Dict[str, Any]:
+    """
+    Search Wikipedia for article titles and direct URLs via OpenSearch API.
+    """
+    search_query = query or kwargs.get("topic") or kwargs.get("q", "")
+    if not search_query:
+        return {"error": "Search query is required"}
 
-    try:
-        response = httpx.get(url, timeout=10, follow_redirects=True)
-
-        if response.status_code == 200:
-            data = response.json()
-            return {
-                "title": data.get("title", topic),
-                "summary": data.get("extract", "No summary available"),
-                "description": data.get("description", ""),
-                "url": data.get("content_urls", {}).get("desktop", {}).get("page", ""),
-                "thumbnail": data.get("thumbnail", {}).get("source", ""),
-                "word_count": len(data.get("extract", "").split()),
-                "data_source": "Wikipedia API (LIVE)",
-                "is_real_data": True,
-            }
-        elif response.status_code == 404:
-            return {"error": f"Topic '{topic}' not found on Wikipedia", "is_real_data": False}
-        else:
-            return {"error": f"API error: {response.status_code}", "is_real_data": False}
-
-    except Exception as e:
-        return {"error": f"Request failed: {str(e)}", "is_real_data": False}
-
-
-@agent.on(
-    "wiki_search",
-    description="Search Wikipedia for articles related to a query",
-    input_schema={"query": "string — search query", "limit": "integer (default 5)"},
-    output_schema={"results": "array of article titles"},
-)
-def wiki_search(query: str, limit: int = 5):
-    """Search Wikipedia for articles."""
     url = "https://en.wikipedia.org/w/api.php"
     params = {
         "action": "opensearch",
-        "search": query,
-        "limit": min(limit, 10),
+        "search": search_query,
+        "limit": kwargs.get("limit", 5),
+        "namespace": 0,
         "format": "json",
     }
 
     try:
-        response = httpx.get(url, params=params, timeout=10)
+        response = httpx.get(
+            url,
+            params=params,
+            headers=WIKIPEDIA_HEADERS,
+            timeout=10.0,
+            follow_redirects=True,
+        )
 
         if response.status_code == 200:
             data = response.json()
@@ -84,23 +77,72 @@ def wiki_search(query: str, limit: int = 5):
                 })
 
             return {
-                "query": query,
+                "query": search_query,
                 "results": results,
                 "total_found": len(results),
                 "data_source": "Wikipedia API (LIVE)",
                 "is_real_data": True,
             }
         else:
-            return {"error": f"Search failed: {response.status_code}"}
+            return {"error": f"Search failed with status code: {response.status_code}"}
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"Wikipedia search request error: {str(e)}"}
 
 
+# 3. Capability: Get Wikipedia Page Summary
+@agent.on("wiki_summary")
+def get_wikipedia_summary(topic: str = "", **kwargs) -> Dict[str, Any]:
+    """
+    Fetch clean extract summary and metadata for a specific topic.
+    """
+    search_topic = topic or kwargs.get("query") or kwargs.get("title", "")
+    if not search_topic:
+        return {"error": "Topic title is required"}
+
+    formatted_topic = search_topic.strip().replace(" ", "_")
+    url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{formatted_topic}"
+
+    try:
+        response = httpx.get(
+            url,
+            headers=WIKIPEDIA_HEADERS,
+            timeout=10.0,
+            follow_redirects=True,
+        )
+
+        if response.status_code == 200:
+            data = response.json()
+            extract = data.get("extract", "")
+            title = data.get("title", search_topic)
+            page_url = (
+                data.get("content_urls", {}).get("desktop", {}).get("page", "")
+            )
+
+            return {
+                "title": title,
+                "summary": extract,
+                "url": page_url,
+                "word_count": len(extract.split()) if extract else 0,
+                "data_source": "Wikipedia REST API (LIVE)",
+                "is_real_data": True,
+            }
+        elif response.status_code == 404:
+            return {"error": f"Page '{search_topic}' not found on Wikipedia."}
+        else:
+            return {"error": f"Summary fetch failed with status code: {response.status_code}"}
+
+    except Exception as e:
+        return {"error": f"Wikipedia summary request error: {str(e)}"}
+
+
+# 4. Standalone Runner / Server
 if __name__ == "__main__":
     agent.info()
     try:
         agent.register()
     except Exception as e:
-        print(f"⚠️ Registry: {e}")
-    agent.serve(port=8013)
+        print(f"⚠️ Registry not available: {e}")
+    port = int(os.getenv("PORT", 8013))
+    print(f"🧠 Starting WikiBrain on port {port}...")
+    agent.serve(port=port)
