@@ -1,0 +1,33 @@
+# Mycelium Protocol by US Neural
+
+> Decentralized, edge-native semantic routing protocol for AI agent swarms and multi-tool architectures. Replaces centralized LLM tool selection with local, sub-10ms vector-mesh discovery.
+
+## Key Capabilities & Benchmarks
+- Sub-10ms Intent Routing: Matches natural language intent to tool endpoints in <9.6ms locally using sentence-transformers (all-MiniLM-L6-v2) and ChromaDB.
+- 100k Agent Scale: Tested on 100,000 synthetic agents with 70.7% Top-1 family-level accuracy (+30.3% over BM25).
+- Zero LLM Inference Cost: $0 routing overhead; eliminates prompt stuffing and 2000ms LLM routing tax.
+- Anthropic MCP Integration: Native Model Context Protocol adapter with Human-On-The-Loop (HOL Guard) safety firewall.
+- Zero-Trust Security: Inter-agent HMAC-SHA256 message signing and Enterprise API key authorization (X-Mycelium-API-Key).
+- Persistence: In-memory LRU caching with persistent SQLite backing (data/mycelium.db).
+
+## Installation & SDKs
+- Python (Backend & LangChain): `pip install mycelium-agents`
+- JavaScript / TypeScript (Node.js & Web): `npm install mycelium-js`
+
+## Core Python API Reference
+
+```python
+from mycelium.core.agent import Agent
+from mycelium.integrations.langchain import MyceliumSemanticRouter
+
+# 1. Register a capability
+agent = Agent(
+    agent_id="forex_01",
+    name="CurrencyMaster",
+    description="Converts USD, EUR, INR and provides live foreign exchange currency conversion rates.",
+    tags=["finance", "currency"]
+)
+
+# 2. Semantic routing with LangChain (Sub-15ms)
+router = MyceliumSemanticRouter(base_url="http://127.0.0.1:8000/api/v1")
+tool_name, score = router.route_and_execute("I need to convert 100 USD to euros", tools)

@@ -98,6 +98,7 @@ async def lifespan(app: FastAPI):
         print(f"⚠️ Semantic search disabled: {e}")
 
     # Restore agents from persistent SQLite storage
+    # Restore agents from persistent SQLite storage
     init_db()
     saved_agents = AgentDB.list_all(limit=100000)
     for a in saved_agents:
@@ -107,8 +108,7 @@ async def lifespan(app: FastAPI):
                 semantic_engine.index_agent(a)
             except Exception:
                 pass
-    if saved_agents:
-        print(f"💾 Restored {len(saved_agents)} agents from SQLite database.")
+    print(f"💾 SQLite persistence active: {len(saved_agents)} agents loaded from database.")
 
     yield
 
@@ -279,6 +279,12 @@ async def discover_agents(
     capability: Optional[str] = Query(default=None),
     tags: Optional[str] = Query(default=None),
     min_trust: float = Query(default=0.0),
+    min_score: float = Query(
+        default=0.20,
+        ge=0.0,
+        le=1.0,
+        description="Minimum confidence threshold. Below this, router abstains."
+    ),
     limit: int = Query(default=10, le=50),
     semantic: bool = Query(
         default=True,
@@ -348,19 +354,28 @@ async def discover_agents(
             results.append(agent_data)
 
         # Store in cache
-        cache_set(q, limit, results)
-
-        if results:
-            # Broadcast to UI
-            await ws_manager.broadcast_json({
-                "event": "routed",
+        # Abstention Check: Agar confidence threshold se kam hai toh abstain karo
+        if not results or (results and results[0].get("_similarity_score", 0.0) < min_score):
+            best_score = results[0].get("_similarity_score", 0.0) if results else 0.0
+            return {
                 "query": q,
-                "agent_id": results[0]["agent_id"],
-                "agent_name": results[0]["name"]
-            })
+                "status": "abstained",
+                "reason": "below_confidence_threshold",
+                "threshold": min_score,
+                "top_similarity": best_score,
+                "search_type": "semantic_v2",
+                "agents": [],
+                "total_results": 0,
+                "semantic_enabled": True,
+                "cache_hit": False,
+            }
+
+        # Store in cache
+        cache_set(q, limit, results)
 
         return {
             "query": q,
+            "status": "routed",
             "search_type": "semantic_v2",
             "agents": results[:limit],
             "total_results": len(results),
