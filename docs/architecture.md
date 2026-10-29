@@ -85,9 +85,9 @@ AI backends are predominantly Python (`mycelium-agents`), while modern web inter
 
 ---
 
-## Enterprise Security Architecture (OWASP ASI06)
+## Enterprise Security Architecture (OWASP ASI02 & ASI03 Mitigations)
 
-To defend against **OWASP ASI06 (AI Agent Over-Permissioning)** and unauthorized tool scanning:
+To provide defense-in-depth mitigations against **OWASP Agentic Threats: ASI02 (Excessive Agency) & ASI03 (Tool Misuse & Privilege Escalation)** and unauthorized tool scanning:
 
 1. **Least-Privilege Routing (LPR):** Agents expose atomic capabilities (`convert_currency`) rather than execution scopes.
 2. **Registry Auth Moat:** Protected by `X-Mycelium-API-Key` dependency checks.

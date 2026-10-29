@@ -1,13 +1,13 @@
 {
   "name": "mycelium-js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "US Neural: Semantic Tool Registry SDK for JavaScript",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "node test.js"
   },
-  "keywords": [
+ "keywords": [
     "ai",
     "agents",
     "semantic",
@@ -17,5 +17,8 @@
     "orchestration"
   ],
   "author": "US Neural",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -1,3 +1,7 @@
-mycelium-agents==0.2.0
+mycelium-agents>=0.3.2
 fastapi
 uvicorn
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+httpx
+pydantic
